@@ -40,10 +40,10 @@ export function HistorySheet({ items, currentDialogId, onRestore, onDelete, onTo
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <h2 style={{ fontFamily: T.fontHead, fontWeight: 600, fontSize: 18, margin: 0 }}>История диалогов</h2>
             <div ref={menuWrapRef} style={{ display: "flex", gap: 4 }}>
-              <button onClick={() => setMenuOpen(v => !v)} style={iconBtnStyle()} title="Меню">
+              <button onClick={() => setMenuOpen(v => !v)} style={iconBtnStyle()} title="Меню" aria-label="Меню" aria-expanded={menuOpen}>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke={T.ink50} strokeWidth="1.6"><circle cx="3" cy="8" r="1" /><circle cx="8" cy="8" r="1" /><circle cx="13" cy="8" r="1" /></svg>
               </button>
-              <button onClick={onClose} style={{ ...btnReset, width: 32, height: 32, borderRadius: 8, color: T.ink50, fontSize: 18 }}>×</button>
+              <button onClick={onClose} title="Закрыть" aria-label="Закрыть" style={{ ...btnReset, width: 32, height: 32, borderRadius: 8, color: T.ink50, fontSize: 18 }}>×</button>
             </div>
             {menuOpen && (
               <div ref={menuPopoverRef} style={popoverStyle({ top: 32, right: 56, w: 200 })}>
@@ -74,7 +74,7 @@ export function HistorySheet({ items, currentDialogId, onRestore, onDelete, onTo
               <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
                 <button onClick={() => onTogglePin(item.dialogId)} style={{ ...btnReset, height: 28, padding: "0 10px", borderRadius: 6, border: `1px solid ${T.ink20}`, fontSize: 11, color: T.ink70 }}>{item.pinned ? "Открепить" : "Закрепить"}</button>
                 <button onClick={() => onRename(item.dialogId)} style={{ ...btnReset, height: 28, padding: "0 10px", borderRadius: 6, border: `1px solid ${T.ink20}`, fontSize: 11, color: T.ink70 }}>Переименовать</button>
-                <button onClick={() => onDelete(item.dialogId)} style={{ ...btnReset, height: 28, padding: "0 10px", borderRadius: 6, border: `1px solid ${T.ink20}`, fontSize: 11, color: T.red }}>×</button>
+                <button onClick={() => onDelete(item.dialogId)} title="Удалить" aria-label="Удалить" style={{ ...btnReset, height: 28, padding: "0 10px", borderRadius: 6, border: `1px solid ${T.ink20}`, fontSize: 11, color: T.red }}>×</button>
               </div>
             </div>
           ))}
