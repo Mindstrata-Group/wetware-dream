@@ -1,0 +1,316 @@
+/* desktop safety: hide mobile-only chat controls */
+.ms-mobile-mode-strip,
+.ms-kb-collapse {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  :root { --topbar-h: auto; }
+
+  .ms-home-one-screen {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .ms-topbar,
+  .ms-topbar-home,
+  .ms-chat-topbar {
+    min-height: 58px;
+    height: auto;
+    padding: 8px 12px;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .ms-chat-topbar .ms-brand-link {
+    margin-left: 0 !important;
+    margin-right: auto;
+    max-width: min(52vw, 196px);
+    min-width: 0;
+  }
+
+  .ms-chat-topbar .ms-logo-image {
+    width: 100%;
+    height: auto;
+    max-height: 34px;
+    object-fit: contain;
+  }
+
+  .ms-top-actions {
+    width: auto;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .ms-chat-topbar .ms-top-actions {
+    width: auto;
+    margin-left: auto;
+    justify-content: flex-end;
+  }
+
+  .ms-top-actions .ms-button {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+
+  .ms-topbar-home .ms-top-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ms-profile-actions {
+    width: 100%;
+    margin-left: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 8px;
+  }
+  .ms-profile-actions::-webkit-scrollbar { display: none; }
+
+  .ms-topbar-home .ms-top-actions .ms-button {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .ms-profile-actions .ms-button {
+    width: auto;
+    flex: 0 0 auto;
+    min-width: 108px;
+    white-space: nowrap;
+  }
+
+  .ms-home-shell,
+  .ms-admin-container {
+    padding-inline: 10px !important;
+  }
+
+  .ms-home-shell {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding-top: 12px !important;
+  }
+
+  .ms-demo-grid,
+  .ms-admin-layout,
+  .ms-admin-grid-two {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .ms-demo-modes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .ms-demo-mode {
+    min-height: 46px;
+    padding: 8px;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .ms-admin-tabs {
+    position: static !important;
+    max-width: 100%;
+    overflow-x: auto;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+
+  .ms-admin-tabs button {
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .ms-admin-content,
+  .ms-admin-content .card,
+  .ms-admin-content .ms-panel,
+  .ms-admin-content .ms-admin-card {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .ms-admin-content input,
+  .ms-admin-content select,
+  .ms-admin-content textarea,
+  .ms-admin-content button {
+    max-width: 100%;
+  }
+  .ms-home-one-screen {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .ms-home-shell {
+    height: calc(100dvh - 58px);
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .ms-demo-panel {
+    height: 100%;
+    padding: 10px;
+  }
+
+  .ms-demo-grid {
+    grid-template-columns: 90px minmax(0, 1fr) !important;
+    gap: 8px;
+  }
+
+  .ms-demo-modes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+  }
+
+  .ms-demo-mode {
+    min-height: 72px;
+    padding: 8px 6px;
+    font-size: 11px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ms-demo-chat {
+    gap: 6px;
+  }
+
+  .ms-demo-message {
+    max-height: 132px;
+    overflow: hidden;
+  }
+  .ms-logo-image { max-width: 156px; height: 30px; }
+  .ms-button-sm { min-height: 34px; padding: 0 10px; font-size: 13px; }
+  .ms-panel { border-radius: 14px; }
+
+  .ms-demo-head h1 {
+    margin: 0;
+    font-size: clamp(20px, 7vw, 28px);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  .ms-demo-modes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ms-demo-note span:first-child { display: none; }
+  .ms-home-privacy { margin-top: 8px; }
+
+  .ms-access-shell {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .ms-access-card {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .ms-access-card h1 {
+    font-size: clamp(26px, 8vw, 34px);
+    line-height: 1.1;
+  }
+
+  .ms-access-card p {
+    margin-bottom: 14px;
+    font-size: 14px;
+  }
+
+  .ms-access-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .ms-access-actions .ms-button {
+    width: 100%;
+  }
+
+  .ms-admin-content .card,
+  .ms-admin-content .ms-panel {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .ms-admin-content table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ms-admin-content th,
+  .ms-admin-content td {
+    white-space: nowrap;
+  }
+
+  .ms-admin-mini-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .ms-admin-mini-actions .ms-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px), (max-height: 760px) and (orientation: portrait) {
+  .ms-demo-input-row {
+    display: block;
+  }
+
+  .ms-demo-input-row input {
+    display: none;
+  }
+
+  .ms-demo-input-row button {
+    width: 100%;
+    min-height: 42px;
+  }
+
+  .ms-demo-modes { gap: 6px; }
+  .ms-demo-mode { min-height: 42px; padding: 6px; font-size: 11px; }
+
+  .ms-chip { white-space: normal; }
+}
+
+
+@media (min-width: 481px) {
+  .ms-home-one-screen .ms-demo-input-row button {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .ms-profile-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .ms-profile-identity {
+    width: 100%;
+    flex-direction: row !important;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+  }
+
+  .ms-profile-stats-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}

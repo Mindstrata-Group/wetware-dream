@@ -1,0 +1,176 @@
+# CI of the public repository. Every job calls the same make target a
+# contributor runs locally, so "green make check" and "green CI" mean the same.
+#
+# Where jobs run: ubuntu-latest in the main repository (pull requests from
+# strangers land there and must never run on anybody's computer). In a fork,
+# on push, after the owner sets MINDSTRATA_SELF_HOSTED=true, jobs run on the
+# owner's own runner from runner/. tools/prcheck runner-safety enforces this.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    name: Repository gates
+    runs-on: ${{ (github.repository != 'Mindstrata-Group/wetware-dream' && github.event_name == 'push' && vars.MINDSTRATA_SELF_HOSTED == 'true') && fromJSON('["self-hosted","mindstrata-runner"]') || 'ubuntu-latest' }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - run: make guard
+
+  comments:
+    name: Comments in English
+    runs-on: ${{ (github.repository != 'Mindstrata-Group/wetware-dream' && github.event_name == 'push' && vars.MINDSTRATA_SELF_HOSTED == 'true') && fromJSON('["self-hosted","mindstrata-runner"]') || 'ubuntu-latest' }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - run: make comments
+
+  secrets:
+    name: Secret scan (changed commits)
+    runs-on: ${{ (github.repository != 'Mindstrata-Group/wetware-dream' && github.event_name == 'push' && vars.MINDSTRATA_SELF_HOSTED == 'true') && fromJSON('["self-hosted","mindstrata-runner"]') || 'ubuntu-latest' }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Scan the commits of this change
+        env:
+          RANGE: ${{ github.event_name == 'pull_request' && format('{0}..{1}', github.event.pull_request.base.sha, github.event.pull_request.head.sha) || format('{0}..{1}', github.event.before, github.sha) }}
+        run: make secrets RANGE="$RANGE"
+
+  tests-touched:
+    name: Tests changed with code
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Code changes come with tests (or the no-tests-needed label)
+        env:
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: make tests-touched BASE="${{ github.event.pull_request.base.sha }}"
+
+  api:
+    name: API vet + unit (race)
+    runs-on: ${{ (github.repository != 'Mindstrata-Group/wetware-dream' && github.event_name == 'push' && vars.MINDSTRATA_SELF_HOSTED == 'true') && fromJSON('["self-hosted","mindstrata-runner"]') || 'ubuntu-latest' }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: apps/api/go.sum
+      - run: make api-vet api-unit
+
+  api-integration:
+    name: API integration (Postgres)
+    runs-on: ${{ (github.repository != 'Mindstrata-Group/wetware-dream' && github.event_name == 'push' && vars.MINDSTRATA_SELF_HOSTED == 'true') && fromJSON('["self-hosted","mindstrata-runner"]') || 'ubuntu-latest' }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: apps/api/go.sum
+      # On GitHub machines make starts a throwaway Postgres container; the
+      # contributor runner provides one as a sidecar (TEST_DATABASE_URL).
+      - run: make api-integration
+
+  anonymizer:
+    name: Anonymizer (pytest)
+    runs-on: ${{ (github.repository != 'Mindstrata-Group/wetware-dream' && github.event_name == 'push' && vars.MINDSTRATA_SELF_HOSTED == 'true') && fromJSON('["self-hosted","mindstrata-runner"]') || 'ubuntu-latest' }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: make anonymizer-test
+
+  web:
+    name: Web typecheck + contract + vitest
+    runs-on: ${{ (github.repository != 'Mindstrata-Group/wetware-dream' && github.event_name == 'push' && vars.MINDSTRATA_SELF_HOSTED == 'true') && fromJSON('["self-hosted","mindstrata-runner"]') || 'ubuntu-latest' }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: make web-install web-check
+
+  fresh-clone:
+    # The README promise, checked literally: on a clean machine with only
+    # Docker and make, `make dev` brings up a working site with a dev admin.
+    # Always a GitHub machine: it needs Docker, which the contributor runner
+    # from runner/ deliberately does not expose.
+    name: "Fresh clone: make dev"
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Newcomer machine has no Go and no Node
+        # GitHub machines ship Go and Node in system directories, so they
+        # cannot simply be dropped from PATH. Shims that fail loudly come
+        # first in PATH instead: any hidden call from `make dev` breaks the job.
+        run: |
+          set -euo pipefail
+          shims="$RUNNER_TEMP/newcomer-bin"
+          mkdir -p "$shims"
+          for tool in go node npm npx; do
+            printf '#!/bin/sh\necho "%s is not installed on a newcomer machine; make dev must need only Docker and make" >&2\nexit 127\n' "$tool" > "$shims/$tool"
+            chmod +x "$shims/$tool"
+          done
+          echo "$shims" >> "$GITHUB_PATH"
+          docker version --format 'docker {{.Server.Version}}'
+      - name: make dev (first run, no .env)
+        run: |
+          set -euo pipefail
+          ! go version 2>/dev/null
+          make dev
+      - name: Site, API and the development admin work
+        run: |
+          set -euo pipefail
+          . ./.env
+          api="http://localhost:${API_PORT:-18080}"
+          web="http://localhost:${WEB_PORT:-3000}"
+          curl -fsS --retry 30 --retry-delay 2 --retry-all-errors "$api/health"
+          page="$(curl -fsS --retry 30 --retry-delay 2 --retry-all-errors "$web/")"
+          grep -q '<title>[^<]*Mindstrata' <<<"$page" || { echo "home page has no Mindstrata title" >&2; exit 1; }
+          # Log in as the dev admin printed by `make dev`. Cookies may carry the
+          # Secure flag, which curl drops over plain http, so pass them by hand.
+          curl -fsS -D login.headers -o /dev/null -H 'Content-Type: application/json' \
+            -d '{"email":"admin@example.com","password":"dev-password-only"}' "$api/api/auth/login"
+          cookies="$(grep -i '^set-cookie:' login.headers | sed -E 's/^[Ss]et-[Cc]ookie: *([^;]*).*/\1/' | paste -sd ';' -)"
+          test -n "$cookies" || { echo "login set no cookie" >&2; exit 1; }
+          me="$(curl -fsS -H "Cookie: $cookies" "$api/api/auth/me")"
+          grep -q 'admin@example.com' <<<"$me" || { echo "signed in, but /api/auth/me does not know the admin: $me" >&2; exit 1; }
+      - name: make dev again (existing .env and admin)
+        run: make dev
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail 200 || true
+      - name: make dev-down
+        if: always()
+        run: make dev-down

@@ -1,0 +1,54 @@
+{
+  "name": "mindstrata-stage2-web",
+  "private": true,
+  "version": "0.2.0",
+  "scripts": {
+    "dev": "next dev -H localhost -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit --pretty false",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:mutation": "stryker run stryker.behavior.conf.json",
+    "test:mutation:extended": "stryker run stryker.behavior.extended.conf.json",
+    "test:mutation:infra": "stryker run stryker.behavior.infra.conf.json",
+    "test:mutation:broad": "stryker run",
+    "test:coverage": "vitest run --coverage",
+    "openapi:generate": "openapi-typescript ../../docs/openapi/openapi.json -o src/lib/generated/openapi.ts",
+    "openapi:check": "npm run openapi:generate -- --check"
+  },
+  "overrides": {
+    "sharp": "^0.35.4",
+    "next": {
+      "postcss": "^8.5.23"
+    }
+  },
+  "dependencies": {
+    "next": "^15.5.25",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/vitest-runner": "^9.6.1",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "22.15.29",
+    "@types/react": "19.1.6",
+    "@types/react-dom": "19.1.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^2.1.9",
+    "autoprefixer": "^10.5.0",
+    "jsdom": "^25.0.1",
+    "openapi-typescript": "^7.10.1",
+    "postcss": "^8.5.23",
+    "tailwindcss": "^4.2.4",
+    "typescript": "5.8.3",
+    "vitest": "^2.1.8"
+  }
+}

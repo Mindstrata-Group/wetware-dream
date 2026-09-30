@@ -1,0 +1,583 @@
+@import "tailwindcss";
+@import "./styles/access.css";
+@import "./styles/legal.css";
+@import "./styles/chat.css";
+@import "./styles/admin.css";
+@import "./styles/admin-workspace.css";
+@import "./styles/admin-workspace-extra.css";
+@import "./styles/admin-fixes.css";
+@import "./styles/responsive.css";
+@import "./styles/mobile-chat-redesign.css";
+:root {
+  --background: #f3f8f7;
+  --foreground: #08151c;
+  --card: #ffffff;
+  --card-rgb: 255, 255, 255;
+  --line: #d5e3df;
+  --muted: #647483;
+  --accent: #17a7a1;
+  --accent-strong: #0b7e78;
+  /* Brand palette. Used on the landing page and in admin CTAs.
+     It can be overridden in the dark theme, but the green usually stays recognisable. */
+  --brand-green: #1D9E75;
+  --brand-green-dark: #0F6E56;
+  --brand-on: #ffffff; /* contrasting text on top of brand-green */
+  --soft: #eaf7f5;
+  --soft-blue: #eef3ff;
+  --danger-bg: #fff1f1;
+  --danger-line: #efb9b9;
+  --shadow: 0 18px 45px rgba(15, 50, 53, 0.09);
+  --topbar-h: 64px;
+  --chat-bg: #f2f6f5;
+  --chat-surface: #ffffff;
+  --chat-surface-soft: #f7faf9;
+  --chat-ink: #0d1b16;
+  --chat-ink-70: #3d5248;
+  --chat-ink-50: #7a9a8e;
+  --chat-ink-20: rgba(0,0,0,0.12);
+  --chat-ink-10: rgba(0,0,0,0.07);
+  --chat-ink-05: rgba(0,0,0,0.04);
+  --chat-red: #c2453e;
+  --chat-blue: #2f6eaa;
+  --chat-info-bg: #eaf2fb;
+  --chat-info-bd: #b5cfea;
+  --font-exo2: 'Exo 2', system-ui, sans-serif;
+  --font-golos: 'Golos Text', system-ui, sans-serif;
+  --font-unbounded: 'Unbounded', system-ui, sans-serif;
+}
+
+html[data-theme="dark"] {
+  --background: #1f2328;
+  --foreground: #eef3f2;
+  --card: #2a2f35;
+  --card-rgb: 42, 47, 53;
+  --line: #454c55;
+  --muted: #aab4be;
+  --soft: #2d3d3b;
+  --soft-blue: #2c3543;
+  /* Dark-theme overrides for the danger/warning surface, otherwise the light pink
+     #fff1f1 glows as a patch on top of the dark background. */
+  --danger-bg: #3a2528;
+  --danger-line: #6e2f33;
+  --chat-bg: #071915;
+  --chat-surface: #0f2420;
+  --chat-surface-soft: #14302a;
+  --chat-ink: #e8f2ef;
+  --chat-ink-70: #b9cbc4;
+  --chat-ink-50: #8aa49b;
+  --chat-ink-20: rgba(232,242,239,0.22);
+  --chat-ink-10: rgba(232,242,239,0.14);
+  --chat-ink-05: rgba(232,242,239,0.08);
+  --chat-red: #ff8a84;
+  --chat-blue: #8ac3ff;
+  --chat-info-bg: #1c2d3f;
+  --chat-info-bd: #2f4967;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    var(--font-exo2),
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  overflow-x: hidden;
+}
+
+html[data-theme="dark"] body {
+  background: linear-gradient(180deg, #23282e 0%, #1f2328 100%);
+}
+
+body {
+  background:
+    radial-gradient(
+      circle at 4% 10%,
+      rgba(23, 167, 161, 0.07),
+      transparent 24%
+    ),
+    linear-gradient(180deg, #f8fbfa 0%, #f3f8f7 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* dvh = dynamic viewport height: accounts for the mobile chrome (address bar and
+   bottom menu). 100vh = the LARGEST viewport (when the chrome is hidden), which creates
+   a spurious scroll while the chrome is shown. */
+.ms-body,
+.ms-page {
+  min-height: 100dvh;
+}
+
+/* #13: overscroll-behavior-y: none on body prevented bounce, but in iOS Safari
+   it broke finger touch scrolling inside long pages (/privacy/*, admin sub-tabs).
+   Apply it ONLY inside the chat, which needs fullscreen without bounce. */
+html:has(.ms-chat-page),
+body:has(.ms-chat-page) {
+  overflow: hidden;
+  overscroll-behavior-y: none;
+}
+
+/* On other pages we encourage normal mobile scrolling. */
+html:not(:has(.ms-chat-page)),
+body:not(:has(.ms-chat-page)) {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.ms-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.ms-topbar {
+  height: var(--topbar-h);
+  flex: 0 0 var(--topbar-h);
+  border-bottom: 1px solid var(--line);
+  background: rgba(248, 251, 250, 0.96);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 clamp(18px, 4vw, 56px);
+  gap: 18px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.ms-topbar-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: clamp(18px, 9vw, 260px);
+  padding-right: clamp(18px, 7vw, 92px);
+}
+
+.ms-topbar-home .ms-brand-link {
+  justify-self: start;
+}
+
+.ms-topbar-home .ms-top-actions {
+  justify-self: end;
+}
+
+.ms-chat-topbar {
+  padding-left: 12px;
+}
+
+.ms-chat-topbar .ms-brand-link {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.ms-chat-topbar .ms-top-actions {
+  margin-left: auto;
+  margin-right: 0;
+  justify-content: flex-end;
+}
+
+.ms-brand-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+}
+
+.ms-brand-left {
+  margin-right: auto;
+}
+
+.ms-topbar-home .ms-brand-left,
+.ms-chat-topbar .ms-brand-left {
+  margin-right: 0;
+}
+
+.ms-logo-image {
+  height: 46px;
+  width: auto;
+  max-width: 260px;
+  object-fit: contain;
+}
+
+@media (max-width: 520px) {
+  .ms-logo-image {
+    height: 34px;
+  }
+}
+
+.ms-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.ms-button {
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 15px;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--card) 84%, transparent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    border-color 120ms ease;
+}
+
+.ms-button:hover {
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+.ms-button-sm {
+  min-height: 40px;
+  padding: 0 15px;
+  border-radius: 13px;
+}
+
+/* Compact button, exactly as on the /chat page (the reference). Used in
+   admin action buttons (Save/Create/Deactivate/Find/Refresh)
+   so they do not look "huge" on top of dense tables. Replaces
+   ms-button-sm in admin contexts. */
+.ms-button-xs {
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ms-button-primary {
+  border-color: var(--brand-green);
+  background: var(--brand-green);
+  color: var(--brand-on);
+}
+
+.ms-button-ghost {
+  background: color-mix(in oklab, var(--card) 84%, transparent);
+  color: var(--foreground);
+}
+
+.ms-panel {
+  background: color-mix(in oklab, var(--card) 84%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: none;
+}
+
+.ms-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid #cfe5e1;
+  background: var(--soft);
+  color: #3d6965;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Landing */
+
+.ms-home-one-screen {
+  height: 100vh;
+  overflow: hidden;
+}
+
+
+.ms-home-one-screen {
+  position: relative;
+}
+
+.ms-constellation-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+  z-index: 0;
+}
+
+.ms-home-shell {
+  position: relative;
+  z-index: 1;
+}
+.ms-home-shell {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(760px, 1fr);
+  padding: clamp(16px, 2vw, 28px) clamp(18px, 7vw, 92px) 10px
+    clamp(18px, 9vw, 260px);
+  align-items: stretch;
+}
+
+.ms-home-rail {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  min-width: 0;
+}
+
+.ms-home-rail-button {
+  width: 100%;
+  text-align: center;
+  min-height: 52px;
+}
+
+.ms-home-hero {
+  min-width: 0;
+  align-self: center;
+}
+
+.ms-home-hero h1 {
+  margin: 0;
+  font-size: clamp(40px, 4.4vw, 74px);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+  font-weight: 800;
+  max-width: 640px;
+}
+
+.ms-home-hero p {
+  margin: 20px 0 0;
+  max-width: 520px;
+  font-size: clamp(16px, 1.25vw, 21px);
+  line-height: 1.48;
+  color: var(--muted);
+}
+
+.ms-demo-panel {
+  min-height: 0;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
+  border: 1px solid color-mix(in oklab, var(--line) 65%, transparent);
+}
+
+.ms-demo-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ms-demo-head h2 {
+  margin: 0;
+  font-size: clamp(24px, 2vw, 34px);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ms-demo-grid {
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.ms-demo-modes {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  overflow: hidden;
+}
+
+.ms-demo-mode {
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--card) 84%, transparent);
+  border-radius: 18px;
+  min-height: 72px;
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.ms-demo-mode.is-active {
+  background: color-mix(in oklab, var(--soft) 88%, white);
+  border-color: color-mix(in oklab, var(--accent) 45%, #cde7e3);
+  color: var(--accent-strong);
+}
+
+.ms-demo-chat {
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.ms-demo-message {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 13px 15px;
+  background: color-mix(in oklab, var(--card) 84%, transparent);
+  font-size: clamp(14px, 0.9vw, 16px);
+  line-height: 1.42;
+}
+
+.ms-demo-message.is-user {
+  background: var(--soft);
+  border-color: #bdded9;
+}
+
+.ms-demo-meta {
+  color: #718196;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.ms-demo-caret {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--accent-strong);
+  animation: ms-caret-blink 0.9s steps(1, end) infinite;
+}
+
+@keyframes ms-caret-blink {
+  50% { opacity: 0; }
+}
+
+.ms-demo-input-row {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.ms-demo-input-row input {
+  min-width: 0;
+  flex: 1;
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  padding: 0 14px;
+  background: color-mix(in oklab, var(--card) 84%, transparent);
+}
+
+.ms-demo-input-row button {
+  width: 50px;
+  min-height: 48px;
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+
+.ms-home-privacy {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.ms-home-privacy a {
+  color: #8a98a2;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ms-footer-line {
+  flex: 0 0 28px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 clamp(18px, 7vw, 120px);
+  color: #768793;
+  font-size: 12px;
+}
+
+.ms-footer-line a {
+  color: #8a98a2;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+
+.ms-constellation-hint {
+  position: fixed;
+  left: 12px;
+  top: 10px;
+  background: #ffffffd0;
+  border: 1px solid #d7e3ea;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  z-index: 2;
+}
+
+html[data-theme="dark"] .ms-topbar {
+  background: color-mix(in oklab, var(--card) 90%, transparent);
+}
+
+html[data-theme="dark"] .ms-chip {
+  color: #d9ebe6;
+  border-color: #89bab3;
+}
+
+html[data-theme="dark"] .ms-logo-image {
+  filter: invert(1) hue-rotate(168deg) saturate(0.82) brightness(1.08);
+}
+
+@keyframes ms-max-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-5px); }
+  30% { transform: translateX(5px); }
+  45% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
+  90% { transform: translateX(2px); }
+}
+
+.ms-max-notify-btn {
+  animation: ms-max-shake 0.55s ease 0.3s 1;
+}

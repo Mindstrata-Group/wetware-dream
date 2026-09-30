@@ -1,0 +1,15 @@
+# NLP: Natasha NER (slovnet + navec, CPU only, ~30 MB of weights inside the
+# package) and pymorphy3 for morphology. pymorphy2 is still pulled in by
+# natasha, but our code never builds a pymorphy2 analyzer.
+natasha==1.6.0
+slovnet==0.6.0
+navec==0.10.0
+razdel==0.5.0
+pymorphy3==2.0.6
+pymorphy3-dicts-ru==2.4.417150.4580142
+numpy==2.5.3
+# pymorphy2 (natasha's dependency) imports pkg_resources, gone in setuptools>=81.
+setuptools==80.9.0
+# Temporal worker and the offsite backup activity.
+temporalio==1.7.1
+boto3==1.35.99

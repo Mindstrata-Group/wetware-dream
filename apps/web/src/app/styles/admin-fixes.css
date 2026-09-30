@@ -1,0 +1,564 @@
+/* ═══════════════════════════════════════════════════════════
+   admin-fixes.css
+   Import in globals.css AFTER admin-workspace-extra.css
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Dot grid in the background (as in chat/login/promo) ── */
+.ms-page,
+.ms-admin-container,
+body {
+  background-color: var(--background);
+}
+.ms-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, rgba(64, 168, 159, 0.10) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+  background-position: 0 0;
+  opacity: 0.7;
+}
+.ms-page > * {
+  position: relative;
+  z-index: 1;
+}
+html[data-theme="dark"] .ms-page::before {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1.5px);
+}
+
+/* ── Dark theme (everywhere) ── */
+html[data-theme="dark"] {
+  --background: #1f2328;
+  --foreground: #eef3f2;
+  --card: #2a2f35;
+  --line: #454c55;
+  --muted: #aab4be;
+  --soft: #2d3d3b;
+  --soft-blue: #2c3543;
+  --danger-bg: #3a2020;
+  --danger-line: #6b3333;
+}
+html[data-theme="dark"] body {
+  background: linear-gradient(180deg, #23282e 0%, #1f2328 100%);
+}
+html[data-theme="dark"] .ms-topbar,
+html[data-theme="dark"] .ms-admin-tabs,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .ms-panel,
+html[data-theme="dark"] .ms-admin-tabs-strip {
+  background: var(--card) !important;
+  border-color: var(--line);
+}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background: #23282e !important;
+  color: var(--foreground) !important;
+  border-color: var(--line);
+}
+html[data-theme="dark"] .ms-button.ms-button-ghost {
+  background: transparent;
+  color: var(--foreground);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .ms-stat-card,
+html[data-theme="dark"] .ms-info-box {
+  background: var(--soft);
+  border-color: var(--line);
+}
+html[data-theme="dark"] .ms-admin-table th {
+  background: #23282e;
+}
+
+/* ── Header: buttons in a row, not stretched ── */
+.ms-admin-top-actions,
+.ms-profile-actions {
+  width: auto !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+}
+.ms-admin-top-actions .ms-button,
+.ms-profile-actions .ms-button {
+  flex: 0 0 auto !important;
+  min-width: unset !important;
+  white-space: nowrap;
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+  border-radius: 12px;
+}
+
+@media (max-width: 1024px) {
+  .ms-chat-topbar .ms-brand-link {
+    margin-left: 0 !important;
+    margin-right: auto;
+    max-width: min(52vw, 196px);
+  }
+
+  .ms-chat-topbar .ms-logo-image {
+    width: 100%;
+    height: auto;
+    max-height: 34px;
+    object-fit: contain;
+  }
+
+  .ms-chat-topbar .ms-top-actions {
+    width: auto !important;
+    margin-left: auto !important;
+  }
+
+  .ms-profile-actions,
+  .ms-admin-top-actions {
+    width: auto !important;
+    margin-left: auto !important;
+    flex-wrap: nowrap !important;
+    display: flex !important;
+    gap: 8px !important;
+  }
+
+  .ms-profile-actions .ms-button,
+  .ms-admin-top-actions .ms-button {
+    width: auto !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+  }
+}
+
+/* The admin panel is not a full-screen one-screen view: if the content is taller than
+   the mobile viewport, the page must scroll normally. */
+.ms-admin-page {
+  height: auto;
+  min-height: 100dvh;
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* ── Hide the hero ── */
+.ms-admin-container > .hero { display: none !important; }
+
+/* ── Container ── */
+.ms-admin-container {
+  padding-top: 12px;
+  padding-bottom: 80px;
+  width: min(1320px, calc(100% - 24px));
+}
+.ms-admin-layout { margin-top: 8px !important; }
+.ms-admin-message { margin-top: 8px !important; margin-bottom: 0 !important; }
+
+/* ══ FORM: ALL LABELS AS IN WEB2 ══ */
+.ms-admin-form label,
+.ms-admin-card label,
+.ms-editor-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: default;
+}
+.ms-admin-form label > input,
+.ms-admin-form label > select,
+.ms-admin-form label > textarea,
+.ms-admin-card label > input,
+.ms-admin-card label > select,
+.ms-admin-card label > textarea,
+.ms-editor-card label > input,
+.ms-editor-card label > select,
+.ms-editor-card label > textarea {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: var(--foreground) !important;
+  cursor: auto;
+}
+.ms-admin-form label small,
+.ms-admin-card label small,
+.ms-editor-card label small {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+  line-height: 1.4;
+}
+.ms-admin-form label.ms-inline-check,
+.ms-admin-card label.ms-inline-check,
+.ms-inline-check {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.ms-field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 5px;
+}
+
+/* ── Cards ── */
+.ms-admin-card h2 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 14px;
+}
+.ms-admin-card h3,
+.ms-editor-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+/* ── Sidebar ── */
+.ms-admin-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.ms-admin-tabs button.is-active { font-weight: 600; }
+
+/* ── Tables ── */
+.ms-admin-table th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  background: #f8fbfa;
+  padding: 9px 12px;
+  white-space: nowrap;
+}
+.ms-admin-table td { padding: 10px 12px; font-size: 13px; }
+.ms-admin-table tbody tr:hover td { background: var(--soft); }
+
+/* ── Mini-action buttons: web2 style ── */
+.ms-admin-mini-actions button {
+  font-size: 12px;
+  font-weight: 500;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: var(--foreground);
+  border: 1px solid var(--line);
+  background: #fff;
+}
+.ms-admin-mini-actions button:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+.ms-admin-mini-actions button.is-active {
+  border-color: var(--accent);
+  background: var(--soft);
+  color: var(--accent-strong);
+}
+html[data-theme="dark"] .ms-admin-mini-actions button {
+  background: var(--card);
+}
+
+/* ── Stat cards: FONT AS IN WEB2, NOT HUGE ── */
+.ms-stat-card span {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+}
+.ms-stat-card strong {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  word-break: break-word;
+  color: var(--foreground);
+}
+.ms-stat-card small { font-size: 11px; color: var(--muted); }
+.ms-stat-card {
+  padding: 12px 14px !important;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+html[data-theme="dark"] .ms-stat-card { background: var(--soft); }
+
+/* Profile stats: not huge either */
+.ms-profile-stats-grid > div > div:last-child {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+/* ── Textarea ── */
+.ms-admin-form textarea,
+.ms-admin-card textarea,
+.ms-editor-card textarea {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  resize: vertical;
+  font-family: inherit;
+}
+html[data-theme="dark"] .ms-admin-form textarea,
+html[data-theme="dark"] .ms-admin-card textarea {
+  background: #23282e;
+  color: var(--foreground);
+}
+
+/* ── Mode checkboxes ── */
+.ms-mode-checkboxes label {
+  font-weight: 400 !important;
+  font-size: 13px;
+  color: var(--foreground);
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* ── Checkbox list (broadcasts, selectors) ── */
+.ms-checkbox-list {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #fff;
+}
+html[data-theme="dark"] .ms-checkbox-list {
+  background: #23282e;
+}
+.ms-checkbox-list label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 400 !important;
+  color: var(--foreground);
+  cursor: pointer;
+  border-radius: 8px;
+  margin: 0;
+}
+.ms-checkbox-list label:hover { background: var(--soft); }
+.ms-checkbox-list input[type="checkbox"] {
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* ══ MOBILE FIXES ══ */
+@media (max-width: 900px) {
+  .ms-admin-page {
+    height: auto !important;
+    min-height: 100dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ms-admin-container {
+    padding-inline: 10px !important;
+    padding-top: 8px;
+  }
+  /* Hide the vertical sidebar */
+  .ms-admin-layout > aside.ms-admin-tabs { display: none !important; }
+  .ms-admin-layout {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  /* Hide the mobile toggle COMPLETELY; strip-nav replaces it */
+  .ms-admin-mobile-menu-toggle { display: none !important; }
+  
+  /* Strip-nav on top of the content */
+  .ms-admin-tabs-strip {
+    display: flex !important;
+    overflow-x: auto;
+    gap: 4px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--line);
+    scrollbar-width: none;
+    background: rgba(248,251,250,0.98);
+    position: sticky;
+    top: 56px;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+  }
+  .ms-admin-tabs-strip::-webkit-scrollbar { display: none; }
+  .ms-admin-tabs-strip button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    min-height: 32px;
+    padding: 0 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ms-admin-tabs-strip button.is-active {
+    background: var(--soft);
+    border-color: var(--accent);
+    color: var(--accent-strong);
+    font-weight: 600;
+  }
+  html[data-theme="dark"] .ms-admin-tabs-strip {
+    background: rgba(35,40,46,0.98);
+  }
+  html[data-theme="dark"] .ms-admin-tabs-strip button {
+    background: var(--card);
+  }
+  
+  /* More compact topbar */
+  .ms-topbar {
+    padding: 8px 12px !important;
+    min-height: 56px;
+  }
+  .ms-admin-top-actions,
+  .ms-profile-actions {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 8px !important;
+    padding-bottom: 2px;
+  }
+  .ms-admin-top-actions::-webkit-scrollbar,
+  .ms-profile-actions::-webkit-scrollbar { display: none; }
+
+  .ms-admin-top-actions .ms-button,
+  .ms-profile-actions .ms-button {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 108px;
+    padding: 0 12px !important;
+    font-size: 13px;
+    min-height: 36px;
+    white-space: nowrap;
+  }
+}
+@media (min-width: 901px) {
+  .ms-admin-mobile-menu-toggle { display: none !important; }
+  .ms-admin-tabs-strip { display: none !important; }
+}
+
+/* Tables on mobile */
+@media (max-width: 760px) {
+  .ms-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .ms-admin-table { min-width: 520px; }
+}
+
+/* All two-column grids -> 1 column */
+@media (max-width: 640px) {
+  .ms-users-create-grid,
+  .ms-promo-create-grid,
+  .ms-promo-sliders-grid,
+  .ms-promo-bulk-grid,
+  .ms-tariff-edit-grid,
+  .ms-tariff-create-grid,
+  .ms-groups-grid,
+  .ms-export-settings-grid,
+  .ms-export-actions-grid,
+  .ms-orch-model-grid,
+  .ms-guardrail-replace-grid,
+  .ms-modes-create-grid,
+  .ms-stats-two-col,
+  .ms-profile-admin-grid,
+  .ms-profile-stats-grid,
+  .ms-modes-edit-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .ms-admin-mini-actions { flex-wrap: wrap; gap: 6px; }
+  .ms-profile-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Admin profile header: unified with chat/admin button system ── */
+.ms-profile-card {
+  padding-top: 14px;
+}
+
+.ms-profile-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 16px;
+  background: var(--card);
+}
+
+.ms-profile-top-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ms-profile-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--soft);
+  color: var(--accent-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  border: 2px solid var(--line);
+  font-family: var(--font-unbounded, sans-serif);
+}
+
+.ms-profile-title {
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.ms-profile-top-actions .ms-button {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+  border-radius: 12px;
+}
+
+.ms-profile-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 860px) {
+  .ms-profile-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ms-profile-top-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

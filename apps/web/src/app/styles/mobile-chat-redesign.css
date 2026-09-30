@@ -1,0 +1,36 @@
+/* Mobile chat redesign: the layout is now fully inline in page.tsx;
+   the old classes (.ms-chat-topbar, .ms-chat-shell, .ms-compose,
+   .ms-mobile-mode-strip, .ms-kb-collapse, etc.) are no longer used.
+   Only the mobile admin fixes that lived here and are needed by admin/dialogs are kept. */
+
+@media (max-width: 900px) {
+  .ms-admin-top-actions {
+    width: auto;
+    margin-left: auto;
+    gap: 6px;
+  }
+
+  .ms-admin-mobile-menu-toggle {
+    display: inline-flex;
+    min-height: 36px;
+    padding: 0 10px;
+  }
+
+  .ms-admin-container {
+    padding-bottom: 64px;
+  }
+
+  .ms-admin-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  .ms-admin-tabs {
+    display: none !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .ms-admin-mobile-menu-toggle {
+    display: none;
+  }
+}

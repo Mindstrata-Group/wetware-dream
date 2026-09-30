@@ -1,0 +1,40 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "testRunner": "command",
+  "packageManager": "npm",
+  "reporters": [
+    "clear-text",
+    "progress"
+  ],
+  "mutate": [
+    "src/lib/api.ts",
+    "src/lib/siteContent.ts",
+    "src/lib/blogContent.ts",
+    "src/lib/publicTariffs.ts",
+    "src/app/access/_parts/_utils.ts",
+    "src/app/chat/utils.ts",
+    "src/app/chat/storage.ts",
+    "src/app/home-helpers.ts",
+    "src/app/profile/_parts/_utils.ts",
+    "src/app/register/_parts/oauth.ts",
+    "src/lib/shopContent.ts",
+    "src/lib/openapiClient.ts",
+    "src/lib/errorReporter.ts",
+    "!src/**/*.test.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/_types.ts",
+    "!src/app/**/types.ts",
+    "!src/app/**/_theme.ts"
+  ],
+  "thresholds": {
+    "high": 75,
+    "low": 55,
+    "break": 55
+  },
+  "commandRunner": {
+    "command": "npx vitest run src/lib/api.test.ts src/lib/siteContent.test.ts src/lib/blogContent.test.ts src/lib/publicTariffs.test.ts src/lib/shopContent.test.ts src/lib/openapiClient.test.ts src/lib/errorReporter.test.ts src/app/access/page.test.tsx src/app/access/_parts/_utils.test.ts src/app/chat/utils.test.ts src/app/chat/page.test.tsx src/app/chat/storage.test.ts src/app/home-helpers.test.ts src/app/profile/_parts/_utils.test.ts src/app/register/_parts/oauth.test.ts"
+  },
+  "concurrency": 3,
+  "timeoutMS": 60000,
+  "coverageAnalysis": "off"
+}

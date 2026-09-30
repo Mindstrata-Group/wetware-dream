@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Mindstrata-Group/wetware-dream/security/advisories/new
+    about: Report privately, never in a public issue (see SECURITY.md).
+  - name: Commercial license
+    url: https://github.com/Mindstrata-Group/wetware-dream/blob/main/COMMERCIAL.md
+    about: Using Mindstrata in a closed product.

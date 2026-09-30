@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest a change that helps users
+labels: [enhancement]
+body:
+  - type: textarea
+    id: user
+    attributes:
+      label: Who needs it and why
+      description: The person and the situation. What gets easier for them?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

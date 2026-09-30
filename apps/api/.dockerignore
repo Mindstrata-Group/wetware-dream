@@ -1,0 +1,25 @@
+# Exclude test files — they are not needed in the build image and add to context size
+*_test.go
+**/*_test.go
+
+# Go tool output / local vendor
+vendor/
+dist/
+tmp/
+
+# Editor / OS artefacts
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# CI / git metadata (don't bloat layer checksums with these)
+.git/
+.github/
+*.md
+
+# Local env files — never bake secrets into the image
+.env
+.env.*
+*.env

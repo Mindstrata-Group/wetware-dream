@@ -1,0 +1,337 @@
+.ms-link-button {
+  border: 0;
+  background: transparent;
+  color: var(--accent-strong);
+  font-weight: 900;
+  padding: 0;
+  text-align: left;
+}
+
+.ms-editor-card {
+  margin-top: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  background: color-mix(in oklab, var(--card) 90%, transparent);
+}
+
+.ms-admin-table td {
+  white-space: normal;
+}
+
+.ms-chat-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ms-chat-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: msTyping 900ms infinite ease-in-out;
+}
+
+.ms-chat-typing span:nth-child(2) {
+  animation-delay: 120ms;
+}
+.ms-chat-typing span:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@keyframes msTyping {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  40% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+.ms-json-preview {
+  max-height: 260px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.ms-admin-form select[multiple] {
+  min-height: 132px;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.ms-ellipsis {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ms-field-title {
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.ms-qr-wrap {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-width: 132px;
+  min-height: 132px;
+}
+
+.ms-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(28, 121, 97, 0.2);
+  border-top-color: var(--brand);
+  border-radius: 999px;
+  animation: ms-spin 0.8s linear infinite;
+}
+
+@keyframes ms-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ms-loading-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ms-markdown-result {
+  display: grid;
+  gap: 12px;
+}
+
+.ms-markdown-result .prose {
+  max-width: none;
+}
+
+.ms-summary-history {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 16px;
+}
+
+.ms-summary-history h3 {
+  margin: 0;
+}
+
+.ms-summary-preview {
+  max-height: 220px;
+  overflow: auto;
+}
+
+.ms-prompt-picker {
+  border: 1px dashed var(--brand);
+  border-radius: 14px;
+  color: var(--muted);
+  padding: 10px 12px;
+  background: color-mix(in oklab, var(--card) 94%, transparent);
+}
+
+.ms-qr-share {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 14px 0;
+}
+
+.ms-stat-card {
+  font-size: 14px;
+}
+
+.ms-stat-card span {
+  font-size: 12px;
+}
+
+.ms-stat-card strong {
+  font-size: 22px;
+  line-height: 1.15;
+  word-break: break-word;
+}
+
+.ms-chat-bubble-role {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ms-chat-time {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.55;
+}
+
+.ms-access-status-table tr.ms-access-row-expiring td {
+  background: color-mix(in oklab, #ffe08a 24%, var(--card));
+}
+
+.ms-access-status-table tr.ms-access-row-expired td {
+  background: color-mix(in oklab, #ff9f9f 20%, var(--card));
+  color: #8a1f1f;
+}
+
+.ms-access-status-table tr.ms-access-row-active td {
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+}
+
+.ms-field-card {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.ms-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.ms-choice-grid button,
+.ms-summary-history-item {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  color: var(--ink);
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ms-choice-grid button.is-active,
+.ms-admin-mini-actions button.is-active {
+  border-color: var(--brand);
+  background: #ecf8f4;
+  color: var(--brand-strong);
+}
+
+.ms-summary-history-item:hover,
+.ms-choice-grid button:hover {
+  border-color: var(--brand);
+}
+
+.ms-qr-share {
+  justify-content: center;
+  text-align: center;
+}
+
+.ms-create-mode-card {
+  margin-top: 14px;
+}
+
+.ms-reactivate-title {
+  color: var(--brand-strong);
+  font-size: 13px;
+}
+
+.ms-mode-subtabs {
+  margin-bottom: 12px;
+}
+
+.ms-orchestration-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid #b9d7ff;
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--soft-blue) 78%, var(--card));
+  color: #24517f;
+  font-weight: 800;
+  box-shadow: 0 12px 30px rgba(35, 101, 168, 0.12);
+}
+
+.ms-orchestration-pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #2f80ed;
+  box-shadow: 0 0 0 0 rgba(47, 128, 237, 0.55);
+  animation: msOrchestrationPulse 1.2s infinite;
+}
+
+@keyframes msOrchestrationPulse {
+  0% { box-shadow: 0 0 0 0 rgba(47, 128, 237, 0.55); }
+  70% { box-shadow: 0 0 0 10px rgba(47, 128, 237, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(47, 128, 237, 0); }
+}
+
+.ms-qr-wrap {
+  border: 0;
+  cursor: zoom-in;
+}
+
+.ms-qr-wrap.is-expanded {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(8, 13, 23, 0.82);
+  cursor: zoom-out;
+}
+
+.ms-qr-wrap.is-expanded .ms-qr {
+  width: min(82vw, 620px);
+  height: min(82vw, 620px);
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+.ms-admin-table tbody tr {
+  cursor: pointer;
+}
+
+.ms-admin-table tbody tr.is-active {
+  background: rgba(47, 128, 237, 0.08);
+}
+
+.ms-table-sort {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.ms-mode-row.is-exhausted {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.22);
+}
+
+.ms-mode-row.is-exhausted small {
+  display: block;
+  margin-top: 4px;
+  color: #b91c1c;
+  font-weight: 800;
+}
+
+.ms-chip.is-danger {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}

@@ -1,0 +1,925 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mindstrata API",
+    "version": "2026-06-05",
+    "description": "Проверяемый контракт Go API. Поле x-router-path связывает OpenAPI path с регистрацией mux.HandleFunc в apps/api/internal/httpapi/router.go."
+  },
+  "servers": [
+    {
+      "url": "https://mindstrata.ru",
+      "description": "Production"
+    },
+    {
+      "url": "https://stage.mindstrata.ru",
+      "description": "Staging"
+    }
+  ],
+  "tags": [
+    { "name": "health" },
+    { "name": "observability" },
+    { "name": "public" },
+    { "name": "auth" },
+    { "name": "profile" },
+    { "name": "billing" },
+    { "name": "notifications" },
+    { "name": "access" },
+    { "name": "promo-admin" },
+    { "name": "chat" },
+    { "name": "admin" },
+    { "name": "tester" },
+    { "name": "expert" },
+    { "name": "webhook" }
+  ],
+  "paths": {
+    "/health": {
+      "x-router-path": "/health",
+      "get": { "operationId": "getHealth", "tags": ["health"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } }
+    },
+    "/health/deep": {
+      "x-router-path": "/health/deep",
+      "get": { "operationId": "getHealthDeep", "tags": ["health", "observability"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/health/frontend-errors": {
+      "x-router-path": "/health/frontend-errors",
+      "get": { "operationId": "getFrontendErrorsAlertCheck", "tags": ["health", "observability"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/health/ai-errors": {
+      "x-router-path": "/health/ai-errors",
+      "get": { "operationId": "getAIErrorsAlertCheck", "tags": ["health", "observability"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/db-check": {
+      "x-router-path": "/db-check",
+      "get": { "operationId": "getDBCheck", "tags": ["health"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/metrics": {
+      "x-router-path": "/metrics",
+      "get": { "operationId": "getMetrics", "tags": ["observability"], "responses": { "200": { "description": "Prometheus metrics", "content": { "text/plain": { "schema": { "type": "string" } } } } } }
+    },
+    "/api/_error": {
+      "x-router-path": "/api/_error",
+      "post": { "operationId": "postFrontendErrorReport", "tags": ["observability"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/public/demo-modes": {
+      "x-router-path": "/api/public/demo-modes",
+      "get": { "operationId": "getPublicDemoModes", "tags": ["public"], "responses": { "200": { "$ref": "#/components/responses/ModeList" } } }
+    },
+    "/api/public/site-content": {
+      "x-router-path": "/api/public/site-content",
+      "get": { "operationId": "getPublicSiteContent", "tags": ["public"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } }
+    },
+    "/api/public/site-media/{id}/{filename}": {
+      "x-router-path": "/api/public/site-media/",
+      "get": { "operationId": "getPublicSiteMedia", "tags": ["public"], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }, { "name": "filename", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "CMS media file" }, "404": { "description": "Not found" } } },
+      "head": { "operationId": "headPublicSiteMedia", "tags": ["public"], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }, { "name": "filename", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "CMS media headers" }, "404": { "description": "Not found" } } }
+    },
+    "/api/public/tariffs": {
+      "x-router-path": "/api/public/tariffs",
+      "get": { "operationId": "getPublicTariffs", "tags": ["public"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/public/analytics": {
+      "x-router-path": "/api/public/analytics",
+      "get": { "operationId": "getPublicAnalytics", "tags": ["public"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/cookie-consent": {
+      "x-router-path": "/api/cookie-consent",
+      "post": { "operationId": "postCookieConsent", "tags": ["public"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/argument-clinic/vote": {
+      "x-router-path": "/api/argument-clinic/vote",
+      "get": { "operationId": "getArgumentClinicVoteResults", "tags": ["public"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "503": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postArgumentClinicVote", "tags": ["public"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "409": { "$ref": "#/components/responses/JSONError" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/auth/login": {
+      "x-router-path": "/api/auth/login",
+      "post": { "operationId": "postAuthLogin", "tags": ["auth"], "requestBody": { "$ref": "#/components/requestBodies/Login" }, "responses": { "200": { "$ref": "#/components/responses/AuthUser" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/auth/logout": {
+      "x-router-path": "/api/auth/logout",
+      "post": { "operationId": "postAuthLogout", "tags": ["auth"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } }
+    },
+    "/api/auth/me": {
+      "x-router-path": "/api/auth/me",
+      "get": { "operationId": "getAuthMe", "tags": ["auth"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/AuthUser" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/auth/forgot-password": {
+      "x-router-path": "/api/auth/forgot-password",
+      "post": { "operationId": "postAuthForgotPassword", "tags": ["auth"], "requestBody": { "$ref": "#/components/requestBodies/Email" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "429": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/auth/reset-password": {
+      "x-router-path": "/api/auth/reset-password",
+      "post": { "operationId": "postAuthResetPassword", "tags": ["auth"], "requestBody": { "$ref": "#/components/requestBodies/ResetPassword" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/auth/register": {
+      "x-router-path": "/api/auth/register",
+      "post": { "operationId": "postAuthRegister", "tags": ["auth"], "requestBody": { "$ref": "#/components/requestBodies/Register" }, "responses": { "201": { "$ref": "#/components/responses/AuthUser" }, "400": { "$ref": "#/components/responses/JSONError" }, "409": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/auth/verify-email": {
+      "x-router-path": "/api/auth/verify-email",
+      "get": { "operationId": "getAuthVerifyEmail", "tags": ["auth"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAuthVerifyEmail", "tags": ["auth"], "requestBody": { "$ref": "#/components/requestBodies/Token" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/auth/oauth/providers": {
+      "x-router-path": "/api/auth/oauth/providers",
+      "get": { "operationId": "getOAuthProviders", "tags": ["auth"], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } }
+    },
+    "/api/auth/oauth/{provider}/{action}": {
+      "x-router-path": "/api/auth/oauth/",
+      "get": { "operationId": "getOAuthProviderAction", "tags": ["auth"], "parameters": [{ "$ref": "#/components/parameters/OAuthProvider" }, { "$ref": "#/components/parameters/OAuthAction" }], "responses": { "302": { "description": "OAuth redirect" }, "404": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/profile": {
+      "x-router-path": "/api/profile",
+      "get": { "operationId": "getProfile", "tags": ["profile"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/AuthUser" }, "401": { "$ref": "#/components/responses/JSONError" } } },
+      "delete": { "operationId": "deleteProfile", "tags": ["profile"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/profile/settings": {
+      "x-router-path": "/api/profile/settings",
+      "patch": { "operationId": "patchProfileSettings", "tags": ["profile"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/profile/export": {
+      "x-router-path": "/api/profile/export",
+      "get": { "operationId": "getProfileExport", "tags": ["profile"], "description": "Machine-readable export of all data held about the caller (GDPR art. 15/20, 152-FZ art. 14). Always the session owner; a userId query parameter is ignored.", "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" }, "429": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/privacy/consents": {
+      "x-router-path": "/api/privacy/consents",
+      "get": { "operationId": "getPrivacyConsents", "tags": ["profile"], "description": "Consent journal of the caller (logged-in user or guest).", "security": [{ "cookieAuth": [] }, {}], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" }, "503": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postPrivacyConsent", "tags": ["profile"], "description": "Record an act of consent: document, version and SHA-256 of the displayed text.", "security": [{ "cookieAuth": [] }, {}], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" }, "429": { "$ref": "#/components/responses/JSONError" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/privacy/consents/withdraw": {
+      "x-router-path": "/api/privacy/consents/withdraw",
+      "post": { "operationId": "postPrivacyConsentWithdraw", "tags": ["profile"], "description": "Withdraw every active consent for a document; takes effect on the next AI call.", "security": [{ "cookieAuth": [] }, {}], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/billing/autorenew/disable": {
+      "x-router-path": "/api/billing/autorenew/disable",
+      "post": { "operationId": "postBillingAutorenewDisable", "tags": ["billing"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/payments/yookassa/create": {
+      "x-router-path": "/api/payments/yookassa/create",
+      "post": { "operationId": "postYooKassaPaymentCreate", "tags": ["billing"], "security": [{ "cookieAuth": [] }, {}], "requestBody": { "$ref": "#/components/requestBodies/PublicYooKassaPayment" }, "responses": { "200": { "$ref": "#/components/responses/YooKassaPaymentCreated" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" }, "502": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/payments/yookassa/autorenew/disable": {
+      "x-router-path": "/api/payments/yookassa/autorenew/disable",
+      "post": { "operationId": "postYooKassaAutorenewDisable", "tags": ["billing"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/notifications/preferences": {
+      "x-router-path": "/api/notifications/preferences",
+      "get": { "operationId": "getNotificationPreferences", "tags": ["notifications"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } },
+      "patch": { "operationId": "patchNotificationPreferences", "tags": ["notifications"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/notifications/inbox": {
+      "x-router-path": "/api/notifications/inbox",
+      "get": { "operationId": "getNotificationInbox", "tags": ["notifications"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/notifications/max/start-link": {
+      "x-router-path": "/api/notifications/max/start-link",
+      "get": { "operationId": "getMaxNotificationStartLink", "tags": ["notifications"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/notifications/max/unlink": {
+      "x-router-path": "/api/notifications/max/unlink",
+      "post": { "operationId": "postMaxNotificationUnlink", "tags": ["notifications"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/notifications/telegram/start-link": {
+      "x-router-path": "/api/notifications/telegram/start-link",
+      "get": { "operationId": "getTelegramNotificationStartLink", "tags": ["notifications"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/notifications/telegram/unlink": {
+      "x-router-path": "/api/notifications/telegram/unlink",
+      "post": { "operationId": "postTelegramNotificationUnlink", "tags": ["notifications"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/bootstrap/admin": {
+      "x-router-path": "/api/bootstrap/admin",
+      "post": { "operationId": "postBootstrapAdmin", "tags": ["auth", "admin"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/access/status": {
+      "x-router-path": "/api/access/status",
+      "get": { "operationId": "getAccessStatus", "tags": ["access"], "responses": { "200": { "$ref": "#/components/responses/AccessStatus" } } }
+    },
+    "/api/access/promocode/apply": {
+      "x-router-path": "/api/access/promocode/apply",
+      "post": { "operationId": "postApplyAccessPromocode", "tags": ["access"], "security": [{ "cookieAuth": [] }, {}], "requestBody": { "$ref": "#/components/requestBodies/Promocode" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" }, "429": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/promo/validate": {
+      "x-router-path": "/api/promo/validate",
+      "post": { "operationId": "postValidatePromo", "tags": ["access"], "security": [{ "cookieAuth": [] }, {}], "requestBody": { "$ref": "#/components/requestBodies/Promocode" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/promo-admin/status": {
+      "x-router-path": "/api/promo-admin/status",
+      "get": { "operationId": "getPromoAdminStatus", "tags": ["promo-admin"], "parameters": [{ "$ref": "#/components/parameters/Code" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/promo-admin/summarize": {
+      "x-router-path": "/api/promo-admin/summarize",
+      "post": { "operationId": "postPromoAdminSummarize", "tags": ["promo-admin"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/chat/start": {
+      "x-router-path": "/api/chat/start",
+      "post": { "operationId": "postChatStart", "tags": ["chat"], "security": [{ "cookieAuth": [] }, {}], "responses": { "200": { "$ref": "#/components/responses/ChatState" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/chat/attachments": {
+      "x-router-path": "/api/chat/attachments",
+      "post": {
+        "operationId": "postChatAttachment",
+        "tags": ["chat"],
+        "security": [{ "cookieAuth": [] }, {}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": { "type": "string", "format": "binary" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/JSONOK" },
+          "400": { "$ref": "#/components/responses/JSONError" },
+          "401": { "$ref": "#/components/responses/JSONError" },
+          "502": { "$ref": "#/components/responses/JSONError" }
+        }
+      }
+    },
+    "/api/chat/select-mode": {
+      "x-router-path": "/api/chat/select-mode",
+      "post": { "operationId": "postChatSelectMode", "tags": ["chat"], "security": [{ "cookieAuth": [] }, {}], "requestBody": { "$ref": "#/components/requestBodies/SelectMode" }, "responses": { "200": { "$ref": "#/components/responses/ChatState" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/chat/send": {
+      "x-router-path": "/api/chat/send",
+      "post": { "operationId": "postChatSend", "tags": ["chat"], "security": [{ "cookieAuth": [] }, {}], "requestBody": { "$ref": "#/components/requestBodies/ChatMessage" }, "responses": { "200": { "$ref": "#/components/responses/ChatMessagePair" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" }, "429": { "$ref": "#/components/responses/JSONError" }, "502": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/chat/history": {
+      "x-router-path": "/api/chat/history",
+      "get": { "operationId": "getChatHistory", "tags": ["chat"], "security": [{ "cookieAuth": [] }, {}], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } },
+      "delete": { "operationId": "deleteChatHistory", "tags": ["chat"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/chat/complete": {
+      "x-router-path": "/api/chat/complete",
+      "post": { "operationId": "postChatComplete", "tags": ["chat"], "security": [{ "cookieAuth": [] }, {}], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "502": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/status": {
+      "x-router-path": "/api/admin/status",
+      "get": { "operationId": "getAdminStatus", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/stats": {
+      "x-router-path": "/api/admin/stats",
+      "get": { "operationId": "getAdminStats", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/users": {
+      "x-router-path": "/api/admin/users",
+      "get": { "operationId": "getAdminUsers", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminUsers", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/AdminUser" }, "responses": { "201": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/users/{id}": {
+      "x-router-path": "/api/admin/users/",
+      "get": { "operationId": "getAdminUserByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" } } },
+      "patch": { "operationId": "patchAdminUserByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "requestBody": { "$ref": "#/components/requestBodies/AdminUserPatch" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/game/result": {
+      "x-router-path": "/api/game/result",
+      "post": { "operationId": "postGameResult", "tags": ["public"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "409": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/game/stats": {
+      "x-router-path": "/api/game/stats",
+      "get": { "operationId": "getGameStats", "tags": ["public"], "parameters": [{ "name": "game", "in": "query", "required": false, "schema": { "type": "string" } }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/game/tasks": {
+      "x-router-path": "/api/game/tasks",
+      "get": { "operationId": "getGameTasks", "tags": ["public"], "parameters": [{ "name": "task", "in": "query", "required": false, "schema": { "type": "string" } }, { "name": "archived", "in": "query", "required": false, "schema": { "type": "string" } }, { "name": "key", "in": "query", "required": false, "schema": { "type": "string" } }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postGameTasks", "tags": ["public"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/mcp/call": {
+      "x-router-path": "/api/mcp/call",
+      "post": { "operationId": "postMcpCall", "tags": ["public"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/game/session": {
+      "x-router-path": "/api/game/session",
+      "post": { "operationId": "postGameSession", "tags": ["public"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" }, "409": { "$ref": "#/components/responses/JSONError" }, "429": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/game/results": {
+      "x-router-path": "/api/game/results",
+      "get": { "operationId": "getGameResults", "tags": ["public"], "parameters": [{ "name": "key", "in": "query", "required": true, "schema": { "type": "string" } }, { "name": "game", "in": "query", "required": false, "schema": { "type": "string" } }, { "name": "group", "in": "query", "required": false, "schema": { "type": "string" } }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/access": {
+      "x-router-path": "/api/admin/access",
+      "post": { "operationId": "postAdminAccess", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/modes": {
+      "x-router-path": "/api/admin/modes",
+      "get": { "operationId": "getAdminModes", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/ModeList" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminModes", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/Mode" }, "responses": { "201": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/modes/guardrail": {
+      "x-router-path": "/api/admin/modes/guardrail",
+      "get": { "operationId": "getAdminModeGuardrail", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminModeGuardrail", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/modes/model-stats": {
+      "x-router-path": "/api/admin/modes/model-stats",
+      "get": { "operationId": "getAdminModeModelStats", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/ai-models": {
+      "x-router-path": "/api/admin/ai-models",
+      "get": { "operationId": "getAdminAIModels", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/modes/{id}": {
+      "x-router-path": "/api/admin/modes/",
+      "get": { "operationId": "getAdminModeByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "404": { "$ref": "#/components/responses/JSONError" } } },
+      "patch": { "operationId": "patchAdminModeByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "requestBody": { "$ref": "#/components/requestBodies/Mode" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } },
+      "delete": { "operationId": "deleteAdminModeByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/tariffs": {
+      "x-router-path": "/api/admin/tariffs",
+      "get": { "operationId": "getAdminTariffs", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminTariffs", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/Tariff" }, "responses": { "201": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/tariffs/{id}": {
+      "x-router-path": "/api/admin/tariffs/",
+      "get": { "operationId": "getAdminTariffByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "404": { "$ref": "#/components/responses/JSONError" } } },
+      "patch": { "operationId": "patchAdminTariffByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "requestBody": { "$ref": "#/components/requestBodies/Tariff" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } },
+      "delete": { "operationId": "deleteAdminTariffByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/tariff-groups": {
+      "x-router-path": "/api/admin/tariff-groups",
+      "get": { "operationId": "getAdminTariffGroups", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminTariffGroups", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/TariffGroup" }, "responses": { "201": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/tariff-groups/{id}": {
+      "x-router-path": "/api/admin/tariff-groups/",
+      "patch": { "operationId": "patchAdminTariffGroupByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "requestBody": { "$ref": "#/components/requestBodies/TariffGroup" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } },
+      "delete": { "operationId": "deleteAdminTariffGroupByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/promocodes": {
+      "x-router-path": "/api/admin/promocodes",
+      "get": { "operationId": "getAdminPromocodes", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminPromocodes", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/PromocodeAdmin" }, "responses": { "201": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/promocodes/bulk-deactivate": {
+      "x-router-path": "/api/admin/promocodes/bulk-deactivate",
+      "post": { "operationId": "postAdminPromocodesBulkDeactivate", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/promocodes/{id}": {
+      "x-router-path": "/api/admin/promocodes/",
+      "patch": { "operationId": "patchAdminPromocodeByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "requestBody": { "$ref": "#/components/requestBodies/PromocodeAdmin" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } },
+      "delete": { "operationId": "deleteAdminPromocodeByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/orchestration-prompt": {
+      "x-router-path": "/api/admin/orchestration-prompt",
+      "get": { "operationId": "getAdminOrchestrationPrompt", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } },
+      "post": { "operationId": "postAdminOrchestrationPrompt", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/dialog-summary-prompt": {
+      "x-router-path": "/api/admin/dialog-summary-prompt",
+      "get": { "operationId": "getAdminDialogSummaryPrompt", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } },
+      "post": { "operationId": "postAdminDialogSummaryPrompt", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/lead-summary-prompt": {
+      "x-router-path": "/api/admin/lead-summary-prompt",
+      "get": { "operationId": "getAdminLeadSummaryPrompt", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } },
+      "post": { "operationId": "postAdminLeadSummaryPrompt", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/ai-gateways": {
+      "x-router-path": "/api/admin/ai-gateways",
+      "get": { "operationId": "listAdminAIGateways", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } },
+      "post": { "operationId": "createAdminAIGateway", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "409": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/ai-gateways/{id}": {
+      "x-router-path": "/api/admin/ai-gateways/",
+      "post": { "operationId": "updateAdminAIGateway", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/ai-settings": {
+      "x-router-path": "/api/admin/ai-settings",
+      "get": { "operationId": "getAdminAISettings", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } },
+      "post": { "operationId": "postAdminAISettings", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/analytics-settings": {
+      "x-router-path": "/api/admin/analytics-settings",
+      "get": { "operationId": "getAdminAnalyticsSettings", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } },
+      "post": { "operationId": "postAdminAnalyticsSettings", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/site-content": {
+      "x-router-path": "/api/admin/site-content",
+      "get": { "operationId": "getAdminSiteContent", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" } } },
+      "post": { "operationId": "postAdminSiteContent", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/site-content/flush": {
+      "x-router-path": "/api/admin/site-content/flush",
+      "post": { "operationId": "postAdminSiteContentFlush", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } }
+    },
+    "/api/admin/site-media": {
+      "x-router-path": "/api/admin/site-media",
+      "post": { "operationId": "postAdminSiteMedia", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "description": "multipart/form-data with file and optional scope", "content": { "multipart/form-data": { "schema": { "type": "object", "required": ["file"], "properties": { "file": { "type": "string", "format": "binary" }, "scope": { "type": "string" } } } } } }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "delete": { "operationId": "deleteAdminSiteMedia", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "name": "id", "in": "query", "required": true, "schema": { "type": "integer", "format": "int64" } }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/notifications/templates": {
+      "x-router-path": "/api/admin/notifications/templates",
+      "get": { "operationId": "getAdminNotificationTemplates", "tags": ["admin", "notifications"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminNotificationTemplate", "tags": ["admin", "notifications"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/notifications/test": {
+      "x-router-path": "/api/admin/notifications/test",
+      "post": { "operationId": "postAdminNotificationTest", "tags": ["admin", "notifications"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/notifications/send": {
+      "x-router-path": "/api/admin/notifications/send",
+      "post": { "operationId": "postAdminNotificationSend", "tags": ["admin", "notifications"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/notifications/preview": {
+      "x-router-path": "/api/admin/notifications/preview",
+      "post": { "operationId": "postAdminNotificationPreview", "tags": ["admin", "notifications"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/notifications/history": {
+      "x-router-path": "/api/admin/notifications/history",
+      "get": { "operationId": "getAdminNotificationHistory", "tags": ["admin", "notifications"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/exports/messages": {
+      "x-router-path": "/api/admin/exports/messages",
+      "get": { "operationId": "getAdminMessageExports", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" } } },
+      "post": { "operationId": "postAdminMessageExports", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/broadcasts": {
+      "x-router-path": "/api/admin/broadcasts",
+      "post": { "operationId": "postAdminBroadcasts", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/summary-prompts": {
+      "x-router-path": "/api/admin/summary-prompts",
+      "get": { "operationId": "getAdminSummaryPrompts", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" } } },
+      "post": { "operationId": "postAdminSummaryPrompts", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "201": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/summary-prompts/{id}": {
+      "x-router-path": "/api/admin/summary-prompts/",
+      "patch": { "operationId": "patchAdminSummaryPromptByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } },
+      "delete": { "operationId": "deleteAdminSummaryPromptByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/dialogs": {
+      "x-router-path": "/api/admin/dialogs",
+      "get": { "operationId": "getAdminDialogs", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/dialogs/{id}": {
+      "x-router-path": "/api/admin/dialogs/",
+      "get": { "operationId": "getAdminDialogByID", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "404": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/payments": {
+      "x-router-path": "/api/admin/payments",
+      "get": { "operationId": "getAdminPayments", "tags": ["admin", "billing"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/payments/access-recovery": {
+      "x-router-path": "/api/admin/payments/access-recovery",
+      "get": { "operationId": "getAdminPaymentAccessRecovery", "tags": ["admin", "billing"], "security": [{ "cookieAuth": [] }], "parameters": [{ "name": "q", "in": "query", "required": false, "schema": { "type": "string" } }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminPaymentAccessRecoveryTransfer", "tags": ["admin", "billing"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" }, "409": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/payments/subscriptions/revoke": {
+      "x-router-path": "/api/admin/payments/subscriptions/revoke",
+      "post": { "operationId": "postAdminRevokeSubscriptionAccess", "tags": ["admin", "billing"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/payments/yookassa/config": {
+      "x-router-path": "/api/admin/payments/yookassa/config",
+      "get": { "operationId": "getAdminYooKassaConfig", "tags": ["admin", "billing"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminYooKassaConfig", "tags": ["admin", "billing"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/payments/yookassa/create": {
+      "x-router-path": "/api/admin/payments/yookassa/create",
+      "post": { "operationId": "postAdminYooKassaCreatePayment", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/YooKassaPayment" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/payments/yookassa/renewals/run": {
+      "x-router-path": "/api/admin/payments/yookassa/renewals/run",
+      "post": { "operationId": "postAdminYooKassaRunRenewals", "tags": ["admin", "billing"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" }, "502": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/payments/yookassa/run-due-renewals": {
+      "x-router-path": "/api/admin/payments/yookassa/run-due-renewals",
+      "post": { "operationId": "postAdminYooKassaRunDueRenewals", "tags": ["admin", "billing"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" }, "502": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/data-protection": {
+      "x-router-path": "/api/admin/data-protection",
+      "get": { "operationId": "getAdminDataProtection", "tags": ["admin"], "description": "Installation data-protection profile, declared storage country, warnings and gateway processing countries. Owner/admin only.", "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/data-protection/gateway-country": {
+      "x-router-path": "/api/admin/data-protection/gateway-country",
+      "post": { "operationId": "postAdminDataProtectionGatewayCountry", "tags": ["admin"], "description": "Set the ISO country where an AI gateway processes data.", "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" }, "503": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/data-protection/access-log": {
+      "x-router-path": "/api/admin/data-protection/access-log",
+      "get": { "operationId": "getAdminDataProtectionAccessLog", "tags": ["admin"], "description": "Who opened personal data (dialogs, user cards, exports). Ids only, never message text. Owner/admin only.", "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "401": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/client-logs": {
+      "x-router-path": "/api/admin/client-logs",
+      "get": { "operationId": "getAdminClientLogs", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } },
+      "post": { "operationId": "postAdminClientLogsToggle", "tags": ["admin"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/debug/client-log": {
+      "x-router-path": "/api/debug/client-log",
+      "post": { "operationId": "postDebugClientLog", "tags": ["observability"], "security": [{ "cookieAuth": [] }, {}], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "401": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/admin/payments/yookassa/test-charge": {
+      "x-router-path": "/api/admin/payments/yookassa/test-charge",
+      "post": { "operationId": "postAdminYooKassaTestAutoCharge", "tags": ["admin", "billing"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" }, "429": { "$ref": "#/components/responses/JSONError" }, "502": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/webhooks/max/{secret}": {
+      "x-router-path": "/webhooks/max/",
+      "post": { "operationId": "postMaxWebhook", "tags": ["webhooks"], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" } } }
+    },
+    "/webhooks/yookassa/{webhookPath}": {
+      "x-router-path": "/webhooks/yookassa/",
+      "post": { "operationId": "postYooKassaWebhook", "tags": ["webhook"], "parameters": [{ "name": "webhookPath", "in": "path", "required": true, "schema": { "type": "string" } }], "requestBody": { "$ref": "#/components/requestBodies/YooKassaWebhook" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/tester/users/{id}": {
+      "x-router-path": "/api/tester/users/",
+      "get": { "operationId": "getTesterUserByID", "tags": ["tester"], "security": [{ "cookieAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/ID" }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" }, "404": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/tester/users": {
+      "x-router-path": "/api/tester/users",
+      "get": { "operationId": "getTesterUsers", "tags": ["tester"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/List" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/tester/status": {
+      "x-router-path": "/api/tester/status",
+      "get": { "operationId": "getTesterStatus", "tags": ["tester"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/tester/run-check": {
+      "x-router-path": "/api/tester/run-check",
+      "post": { "operationId": "postTesterRunCheck", "tags": ["tester"], "security": [{ "cookieAuth": [] }], "requestBody": { "$ref": "#/components/requestBodies/JSONObject" }, "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "400": { "$ref": "#/components/responses/JSONError" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/tester/user-chat-preview": {
+      "x-router-path": "/api/tester/user-chat-preview",
+      "get": { "operationId": "getTesterUserChatPreview", "tags": ["tester"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    },
+    "/api/expert/status": {
+      "x-router-path": "/api/expert/status",
+      "get": { "operationId": "getExpertStatus", "tags": ["expert"], "security": [{ "cookieAuth": [] }], "responses": { "200": { "$ref": "#/components/responses/JSONOK" }, "403": { "$ref": "#/components/responses/JSONError" } } }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "mindstrata_session"
+      }
+    },
+    "parameters": {
+      "ID": { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64", "minimum": 1 } },
+      "Code": { "name": "code", "in": "query", "required": true, "schema": { "type": "string", "minLength": 1 } },
+      "OAuthProvider": { "name": "provider", "in": "path", "required": true, "schema": { "type": "string", "enum": ["yandex"] } },
+      "OAuthAction": { "name": "action", "in": "path", "required": true, "schema": { "type": "string", "enum": ["start", "callback"] } }
+    },
+    "requestBodies": {
+      "JSONObject": { "required": false, "content": { "application/json": { "schema": { "type": "object", "additionalProperties": true } } } },
+      "Login": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } } },
+      "Register": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterRequest" } } } },
+      "Email": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EmailRequest" } } } },
+      "Token": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TokenRequest" } } } },
+      "ResetPassword": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ResetPasswordRequest" } } } },
+      "Promocode": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PromocodeRequest" } } } },
+      "SelectMode": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SelectModeRequest" } } } },
+      "ChatMessage": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ChatMessageRequest" } } } },
+      "PublicYooKassaPayment": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PublicYooKassaPaymentRequest" } } } },
+      "AdminUser": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AdminUserRequest" } } } },
+      "AdminUserPatch": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AdminUserPatchRequest" } } } },
+      "Mode": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ModeRequest" } } } },
+      "Tariff": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TariffRequest" } } } },
+      "TariffGroup": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/TariffGroupRequest" } } } },
+      "PromocodeAdmin": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PromocodeAdminRequest" } } } },
+      "YooKassaPayment": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/YooKassaPaymentRequest" } } } },
+      "YooKassaWebhook": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/YooKassaWebhook" } } } }
+    },
+    "responses": {
+      "JSONOK": {
+        "description": "JSON response with ok=true on success",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OKResponse" } } }
+      },
+      "JSONError": {
+        "description": "JSON error response",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "AuthUser": {
+        "description": "Authenticated user response",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AuthUserResponse" } } }
+      },
+      "AccessStatus": {
+        "description": "Access status response",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AccessStatusResponse" } } }
+      },
+      "ChatState": {
+        "description": "Current chat state",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ChatStateResponse" } } }
+      },
+      "ChatMessagePair": {
+        "description": "User and assistant message response",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ChatMessagePairResponse" } } }
+      },
+      "YooKassaPaymentCreated": {
+        "description": "Created YooKassa payment with browser confirmation URL",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/YooKassaPaymentCreatedResponse" } } }
+      },
+      "ModeList": {
+        "description": "Mode list response",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ModeListResponse" } } }
+      },
+      "List": {
+        "description": "List response",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ListResponse" } } }
+      }
+    },
+    "schemas": {
+      "OKResponse": {
+        "type": "object",
+        "required": ["ok"],
+        "properties": { "ok": { "type": "boolean", "const": true } },
+        "additionalProperties": true
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["ok", "error"],
+        "properties": {
+          "ok": { "type": "boolean", "const": false },
+          "error": { "type": "string" },
+          "code": { "type": "string" },
+          "errorCode": { "type": "string" },
+          "requiresAuth": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      },
+      "User": {
+        "type": "object",
+        "required": ["id", "role"],
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "email": { "type": ["string", "null"], "format": "email" },
+          "role": { "type": "string", "enum": ["owner", "admin", "billing_admin", "content_admin", "support", "tester", "user"] },
+          "status": { "type": "string" }
+        },
+        "additionalProperties": true
+      },
+      "AuthUserResponse": {
+        "type": "object",
+        "required": ["ok", "user"],
+        "properties": {
+          "ok": { "type": "boolean" },
+          "user": { "$ref": "#/components/schemas/User" }
+        },
+        "additionalProperties": true
+      },
+      "Mode": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "dailyLimit": { "type": "integer" },
+          "active": { "type": "boolean" },
+          "quota": { "$ref": "#/components/schemas/Quota" }
+        },
+        "additionalProperties": true
+      },
+      "Quota": {
+        "type": "object",
+        "properties": {
+          "limit": { "type": "integer" },
+          "used": { "type": "integer" },
+          "remaining": { "type": "integer" }
+        },
+        "additionalProperties": true
+      },
+      "ModeListResponse": {
+        "type": "object",
+        "required": ["ok", "modes"],
+        "properties": {
+          "ok": { "type": "boolean" },
+          "modes": { "type": "array", "items": { "$ref": "#/components/schemas/Mode" } }
+        },
+        "additionalProperties": true
+      },
+      "ListResponse": {
+        "type": "object",
+        "required": ["ok"],
+        "properties": {
+          "ok": { "type": "boolean" },
+          "items": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+        },
+        "additionalProperties": true
+      },
+      "AccessStatusResponse": {
+        "type": "object",
+        "required": ["ok", "userId", "hasAccess", "activeModes"],
+        "properties": {
+          "ok": { "type": "boolean" },
+          "userId": { "type": "integer", "format": "int64" },
+          "hasAccess": { "type": "boolean" },
+          "activeModes": { "type": "array", "items": { "$ref": "#/components/schemas/Mode" } }
+        },
+        "additionalProperties": true
+      },
+      "ChatStateResponse": {
+        "type": "object",
+        "required": ["ok"],
+        "properties": {
+          "ok": { "type": "boolean" },
+          "modeId": { "type": ["integer", "null"], "format": "int64" },
+          "dialogId": { "type": ["integer", "null"], "format": "int64" },
+          "modes": { "type": "array", "items": { "$ref": "#/components/schemas/Mode" } },
+          "quota": { "$ref": "#/components/schemas/Quota" }
+        },
+        "additionalProperties": true
+      },
+      "ChatMessagePairResponse": {
+        "type": "object",
+        "required": ["ok", "user", "assistant"],
+        "properties": {
+          "ok": { "type": "boolean" },
+          "user": { "$ref": "#/components/schemas/ChatMessage" },
+          "switchTrace": { "$ref": "#/components/schemas/ChatMessage" },
+          "assistant": { "$ref": "#/components/schemas/ChatMessage" },
+          "usedLive": { "type": "boolean" },
+          "quota": { "$ref": "#/components/schemas/Quota" }
+        },
+        "additionalProperties": true
+      },
+      "ChatMessage": {
+        "type": "object",
+        "required": ["id", "role", "content", "createdAt"],
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "role": { "type": "string", "enum": ["user", "assistant", "system"] },
+          "content": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "modeId": { "type": "integer", "format": "int64" },
+          "modeName": { "type": "string" }
+        },
+        "additionalProperties": true
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 8 }
+        },
+        "additionalProperties": false
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 8 },
+          "displayName": { "type": "string" }
+        },
+        "additionalProperties": true
+      },
+      "EmailRequest": {
+        "type": "object",
+        "required": ["email"],
+        "properties": { "email": { "type": "string", "format": "email" } },
+        "additionalProperties": false
+      },
+      "TokenRequest": {
+        "type": "object",
+        "required": ["token"],
+        "properties": { "token": { "type": "string", "minLength": 1 } },
+        "additionalProperties": true
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "required": ["token", "password"],
+        "properties": {
+          "token": { "type": "string", "minLength": 1 },
+          "password": { "type": "string", "minLength": 8 }
+        },
+        "additionalProperties": false
+      },
+      "PromocodeRequest": {
+        "type": "object",
+        "required": ["code"],
+        "properties": { "code": { "type": "string", "minLength": 1 } },
+        "additionalProperties": true
+      },
+      "SelectModeRequest": {
+        "type": "object",
+        "required": ["modeId"],
+        "properties": { "modeId": { "type": "integer", "format": "int64", "minimum": 1 } },
+        "additionalProperties": true
+      },
+      "ChatMessageRequest": {
+        "type": "object",
+        "required": ["text"],
+        "properties": {
+          "dialogId": { "type": "integer", "format": "int64", "minimum": 1 },
+          "text": { "type": "string", "minLength": 1 },
+          "responseMode": { "type": "string" },
+          "knowledgeModeIds": { "type": "array", "items": { "type": "integer", "format": "int64" } },
+          "attachmentIds": { "type": "array", "items": { "type": "integer", "format": "int64" } }
+        },
+        "additionalProperties": true
+      },
+      "PublicYooKassaPaymentRequest": {
+        "type": "object",
+        "required": ["tariffId"],
+        "properties": {
+          "tariffId": { "type": "integer", "format": "int64", "minimum": 1 },
+          "subscriptionMonths": { "type": "integer", "minimum": 1, "maximum": 12 },
+          "enableAutoRenew": { "type": "boolean" },
+          "returnUrl": { "type": "string", "format": "uri" }
+        },
+        "additionalProperties": true
+      },
+      "YooKassaPaymentCreatedResponse": {
+        "type": "object",
+        "required": ["ok", "paymentId", "confirmationUrl"],
+        "properties": {
+          "ok": { "type": "boolean", "const": true },
+          "paymentId": { "type": "string" },
+          "confirmationUrl": { "type": "string", "format": "uri" },
+          "invoiceId": { "type": "integer", "format": "int64" },
+          "amount": { "type": "number" },
+          "subscriptionMonths": { "type": "integer" },
+          "autoRenew": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      },
+      "AdminUserRequest": {
+        "type": "object",
+        "required": ["email", "password", "role", "status"],
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 8 },
+          "role": { "$ref": "#/components/schemas/User/properties/role" },
+          "status": { "type": "string" }
+        },
+        "additionalProperties": true
+      },
+      "AdminUserPatchRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "role": { "$ref": "#/components/schemas/User/properties/role" },
+          "status": { "type": "string" }
+        },
+        "additionalProperties": true
+      },
+      "ModeRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "prompt": { "type": "string" },
+          "description": { "type": "string" },
+          "dailyLimit": { "type": "integer", "minimum": 0 },
+          "active": { "type": "boolean" },
+          "aiProvider": { "type": "string", "enum": ["vsegpt", "gemini", "anthropic"] },
+          "thinkingMode": { "type": "string", "enum": ["default", "off", "low", "high"] }
+        },
+        "additionalProperties": true
+      },
+      "TariffRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "priceRub": { "type": "integer", "minimum": 0 },
+          "modeIds": { "type": "array", "items": { "type": "integer", "format": "int64" } },
+          "active": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      },
+      "TariffGroupRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": { "name": { "type": "string", "minLength": 1 }, "active": { "type": "boolean" } },
+        "additionalProperties": true
+      },
+      "PromocodeAdminRequest": {
+        "type": "object",
+        "required": ["code"],
+        "properties": {
+          "code": { "type": "string", "minLength": 1 },
+          "grantsType": { "type": "string" },
+          "targetId": { "type": "integer", "format": "int64" },
+          "maxUses": { "type": "integer", "minimum": 1 },
+          "active": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      },
+      "YooKassaPaymentRequest": {
+        "type": "object",
+        "required": ["userId", "tariffId"],
+        "properties": {
+          "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+          "tariffId": { "type": "integer", "format": "int64", "minimum": 1 },
+          "returnUrl": { "type": "string", "format": "uri" }
+        },
+        "additionalProperties": true
+      },
+      "YooKassaWebhook": {
+        "type": "object",
+        "required": ["event", "object"],
+        "properties": {
+          "event": { "type": "string" },
+          "object": { "type": "object", "required": ["id"], "properties": { "id": { "type": "string" }, "status": { "type": "string" } }, "additionalProperties": true }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

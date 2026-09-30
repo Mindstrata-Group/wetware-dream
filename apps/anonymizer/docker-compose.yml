@@ -1,0 +1,63 @@
+services:
+  # Monthly irreversible pass and offsite backup (Temporal activities).
+  #
+  # Production runs a pre-built image: the anonymizer-image CI job builds
+  # mindstrata-anonymizer:<sha> off-server and ships it to the server, and the
+  # deploy starts it with ANONYMIZER_TAG=<sha> and --no-build. The build
+  # section below is for local runs only (tag "local"), the same pattern as
+  # api/web in docker-compose.prod.yml.
+  anonymizer-python:
+    image: mindstrata-anonymizer:${ANONYMIZER_TAG:-local}
+    build:
+      context: .
+      target: production
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - temporal_internal
+      # prod project network: the backup activity reaches postgres:5432 (pg_dump)
+      - mindstrata_default
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "768M"
+
+  # Reversible mode for LLM calls. Stateless; the API calls it over the
+  # internal network only, no port is published.
+  #
+  # Profile "reversible": it does not start by default, because the chat path
+  # does not call it yet and the server has little memory to spare. Enable the
+  # profile when the pseudonymisation is wired into the chat.
+  anonymizer-http:
+    image: mindstrata-anonymizer:${ANONYMIZER_TAG:-local}
+    build:
+      context: .
+      target: production
+    profiles: ["reversible"]
+    command: ["python", "-m", "anonymizer.server"]
+    restart: unless-stopped
+    environment:
+      ANONYMIZER_PORT: "8090"
+      LOG_LEVEL: INFO
+    networks:
+      mindstrata_default:
+        aliases: [anonymizer-http]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8090/health', timeout=3).status == 200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "768M"
+
+networks:
+  temporal_internal:
+    external: true
+    name: temporal_temporal_internal
+  mindstrata_default:
+    external: true
+    name: mindstrata_default

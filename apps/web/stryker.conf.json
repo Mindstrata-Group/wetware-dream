@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "testRunner": "vitest",
+  "packageManager": "npm",
+  "reporters": [
+    "html",
+    "clear-text",
+    "progress"
+  ],
+  "mutate": [
+    "src/app/chat/**/*.{ts,tsx}",
+    "src/app/access/**/*.{ts,tsx}",
+    "src/app/profile/**/*.{ts,tsx}",
+    "src/app/promo-admin/**/*.{ts,tsx}",
+    "src/app/admin/components/_exports/**/*.{ts,tsx}",
+    "src/app/admin/_hooks/useAdminModeUserActions.tsx",
+    "!src/**/*.test.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/_types.ts",
+    "!src/app/**/types.ts",
+    "!src/app/**/_theme.ts"
+  ],
+  "thresholds": {
+    "high": 75,
+    "low": 45,
+    "break": 55
+  },
+  "vitest": {
+    "configFile": "vitest.config.ts"
+  },
+  "ignoreStatic": true
+}

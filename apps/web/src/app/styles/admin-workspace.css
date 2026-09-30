@@ -1,0 +1,311 @@
+/* Admin workspace */
+.ms-admin-container {
+  width: min(1320px, calc(100% - 32px));
+}
+
+.ms-admin-message {
+  margin-top: 16px;
+}
+
+.ms-admin-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+  align-items: start;
+}
+
+.ms-admin-tabs {
+  position: sticky;
+  top: calc(var(--topbar-h) + 16px);
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  padding: 12px;
+  box-shadow: var(--shadow);
+}
+
+.ms-admin-tabs button {
+  min-height: 46px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: transparent;
+  text-align: left;
+  padding: 0 14px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.ms-admin-tabs button.is-active {
+  border-color: #bdded9;
+  background: var(--soft);
+  color: var(--foreground);
+}
+
+.ms-admin-content,
+.ms-admin-stack {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ms-admin-card {
+  padding: 20px;
+}
+
+.ms-admin-card h2 {
+  margin: 0 0 14px;
+}
+
+.ms-admin-card-head,
+.ms-admin-toolbar,
+.ms-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ms-admin-toolbar input,
+.ms-admin-toolbar select,
+.ms-admin-form input,
+.ms-admin-form select,
+.ms-admin-form textarea,
+.ms-admin-table select {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  padding: 0 12px;
+}
+
+.ms-admin-form textarea {
+  padding: 12px;
+  width: 100%;
+}
+
+.ms-admin-toolbar input {
+  flex: 1;
+  min-width: 220px;
+}
+
+.ms-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.ms-stat-card {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.ms-stat-card span {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.ms-stat-card strong {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.ms-admin-form {
+  display: grid;
+  gap: 12px;
+}
+
+.ms-admin-service-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+
+.ms-mode-checkboxes {
+  max-height: 220px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+}
+
+.ms-mode-checkboxes label,
+.ms-inline-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  color: var(--foreground);
+}
+
+.ms-table-scroll {
+  margin-top: 14px;
+  overflow: auto;
+  max-height: 560px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.ms-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.ms-admin-table th,
+.ms-admin-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.ms-admin-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: color-mix(in oklab, var(--card) 94%, transparent);
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ms-pagination {
+  margin-top: 12px;
+}
+
+.ms-pagination button {
+  min-height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  padding: 0 14px;
+  font-weight: 800;
+}
+
+.ms-admin-grid-two {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(360px, 1.15fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.ms-admin-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  max-height: 560px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.ms-admin-list button {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  padding: 12px;
+  text-align: left;
+  display: grid;
+  gap: 4px;
+}
+
+.ms-admin-list button.is-active {
+  background: var(--soft);
+  border-color: #bdded9;
+}
+
+.ms-admin-list span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .ms-admin-layout,
+  .ms-admin-grid-two {
+    grid-template-columns: 1fr;
+  }
+
+  .ms-admin-tabs {
+    position: static;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}
+
+.ms-admin-mini-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.ms-admin-mini-actions button {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  padding: 0 12px;
+  font-weight: 800;
+  color: var(--accent-strong);
+}
+
+.ms-admin-card-head {
+  margin-bottom: 16px;
+}
+
+.ms-admin-card > textarea,
+.ms-admin-card textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+}
+
+.ms-admin-form input[type="range"] {
+  padding: 0;
+}
+
+.ms-qr {
+  width: 120px;
+  height: 120px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  padding: 6px;
+}
+
+.ms-profile-compact .ms-stat-card strong {
+  font-size: 18px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.ms-stat-card small,
+.ms-admin-form small,
+.ms-info-box small {
+  color: var(--muted);
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.ms-mode-checkboxes span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  white-space: normal;
+}

@@ -1,0 +1,18 @@
+{
+  "comment": "Strict default for therapy conversations. Every kind must be listed; set false to keep a kind in clear text. Direct identifiers (PERSON, PHONE, EMAIL, URL, HANDLE, ADDRESS, DOCUMENT, CARD, ACCOUNT) should never be switched off.",
+  "kinds": {
+    "PERSON": true,
+    "PHONE": true,
+    "EMAIL": true,
+    "URL": true,
+    "HANDLE": true,
+    "ADDRESS": true,
+    "DOCUMENT": true,
+    "CARD": true,
+    "ACCOUNT": true,
+    "PLACE": true,
+    "ORG": true,
+    "DATE": true
+  },
+  "acronyms": true
+}

@@ -1,0 +1,55 @@
+# Reverse proxy with automatic HTTPS (Let's Encrypt) for Mindstrata.
+# Copy to deploy/Caddyfile. SITE_DOMAIN and ACME_EMAIL come from deploy/.env.prod.
+
+{
+	email {$ACME_EMAIL}
+}
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=63072000"
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; img-src 'self' data: blob:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https: wss:; upgrade-insecure-requests"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+}
+
+# Deep health checks and the database probe are for your monitoring only.
+(private_only) {
+	@external not remote_ip private_ranges
+	respond @external 403
+}
+
+{$SITE_DOMAIN}, www.{$SITE_DOMAIN} {
+	encode gzip zstd
+	import security_headers
+
+	handle /api/* {
+		reverse_proxy api:18080
+	}
+
+	handle /health {
+		reverse_proxy api:18080
+	}
+
+	handle /health/* {
+		import private_only
+		reverse_proxy api:18080
+	}
+
+	handle /db-check {
+		import private_only
+		reverse_proxy api:18080
+	}
+
+	# Payment provider webhooks (the secret part of the path is YOOKASSA_WEBHOOK_PATH).
+	handle /webhooks/* {
+		reverse_proxy api:18080
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}

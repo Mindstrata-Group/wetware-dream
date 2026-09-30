@@ -1,0 +1,157 @@
+# Production deployment on a single server with automatic HTTPS.
+#
+#   cp deploy/.env.prod.example deploy/.env.prod     # fill it in
+#   cp deploy/Caddyfile.example deploy/Caddyfile     # usually as is
+#   docker compose -f deploy/compose.prod.yml --env-file deploy/.env.prod up -d
+#
+# Images are pulled from the registry by version (MINDSTRATA_VERSION). To build
+# on your own machine instead: add --build (needs ~3 GB RAM for the web build;
+# build elsewhere and push if the server is small). Full guide: docs/deploy.md.
+
+name: mindstrata
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    command:
+      - postgres
+      - -c
+      - max_connections=${POSTGRES_MAX_CONNECTIONS:-120}
+      - -c
+      - shared_buffers=${POSTGRES_SHARED_BUFFERS:-256MB}
+    environment:
+      POSTGRES_DB: mindstrata
+      POSTGRES_USER: mindstrata
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Full schema for a brand-new database; ignored once data exists.
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mindstrata -d mindstrata"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  api:
+    image: ${IMAGE_PREFIX:-ghcr.io/mindstrata-group/wetware-dream}-api:${MINDSTRATA_VERSION:?set MINDSTRATA_VERSION}
+    build:
+      context: ../apps/api
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      PORT: "18080"
+      DATABASE_URL: postgres://mindstrata:${POSTGRES_PASSWORD}@postgres:5432/mindstrata?sslmode=disable
+      PG_MAX_CONNS: ${PG_MAX_CONNS:-30}
+      PG_MIN_CONNS: ${PG_MIN_CONNS:-5}
+      CORS_ALLOWED_ORIGINS: https://${SITE_DOMAIN:?set SITE_DOMAIN}
+      PUBLIC_WEB_BASE_URL: https://${SITE_DOMAIN}
+      API_PUBLIC_BASE_URL: https://${SITE_DOMAIN}
+      TRUSTED_PROXY_IPS: ${TRUSTED_PROXY_IPS:-10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
+      BOOTSTRAP_ADMIN_TOKEN: ${BOOTSTRAP_ADMIN_TOKEN:?set BOOTSTRAP_ADMIN_TOKEN}
+      GUEST_COOKIE_SECRET: ${GUEST_COOKIE_SECRET:?set GUEST_COOKIE_SECRET}
+      METRICS_BASIC_AUTH: ${METRICS_BASIC_AUTH:-}
+      # Optional integrations; empty means the feature is off.
+      YANDEX_CLIENT_ID: ${YANDEX_CLIENT_ID:-}
+      YANDEX_CLIENT_SECRET: ${YANDEX_CLIENT_SECRET:-}
+      YOOKASSA_SHOP_ID: ${YOOKASSA_SHOP_ID:-}
+      YOOKASSA_SECRET_KEY: ${YOOKASSA_SECRET_KEY:-}
+      YOOKASSA_WEBHOOK_PATH: ${YOOKASSA_WEBHOOK_PATH:-}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      TELEGRAM_API_BASE_URL: ${TELEGRAM_API_BASE_URL:-https://api.telegram.org}
+      MAX_BOT_TOKEN: ${MAX_BOT_TOKEN:-}
+      MAX_BOT_USERNAME: ${MAX_BOT_USERNAME:-}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      MODE_HISTORY_DEPLOY_KEY: ${MODE_HISTORY_DEPLOY_KEY:-}
+      MODE_HISTORY_REPO_URL: ${MODE_HISTORY_REPO_URL:-}
+      # AI provider keys are entered in the admin panel and stored in the
+      # database, not here.
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Background jobs (recurring billing, message anonymization) run on
+  # Temporal. Off by default: enable with --profile worker and TEMPORAL_ADDRESS.
+  worker:
+    profiles: ["worker"]
+    image: ${IMAGE_PREFIX:-ghcr.io/mindstrata-group/wetware-dream}-api:${MINDSTRATA_VERSION}
+    command: ["/worker"]
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://mindstrata:${POSTGRES_PASSWORD}@postgres:5432/mindstrata?sslmode=disable
+      TEMPORAL_ADDRESS: ${TEMPORAL_ADDRESS:-temporal:7233}
+      YOOKASSA_SHOP_ID: ${YOOKASSA_SHOP_ID:-}
+      YOOKASSA_SECRET_KEY: ${YOOKASSA_SECRET_KEY:-}
+      BILLING_RENEWAL_TIMEZONE: ${TZ_NAME:-UTC}
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "128M"
+    depends_on:
+      - api
+
+  web:
+    image: ${IMAGE_PREFIX:-ghcr.io/mindstrata-group/wetware-dream}-web:${MINDSTRATA_VERSION}
+    build:
+      context: ../apps/web
+      args:
+        # Empty = the browser calls /api on the same domain; Caddy routes it.
+        NEXT_PUBLIC_API_BASE_URL: ""
+    restart: unless-stopped
+    environment:
+      API_BASE_URL: http://api:18080
+      HOSTNAME: "0.0.0.0"
+    depends_on:
+      - api
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  caddy:
+    image: caddy:2.9-alpine
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - web
+
+  # Manual migrations: docker compose ... --profile tools run --rm migrate
+  # (why manual: docs/deploy.md, "Migrations").
+  migrate:
+    profiles: ["tools"]
+    image: golang:1.26
+    working_dir: /src
+    volumes:
+      - ..:/src:ro
+    environment:
+      DATABASE_URL: postgres://mindstrata:${POSTGRES_PASSWORD}@postgres:5432/mindstrata?sslmode=disable
+      GOFLAGS: -mod=readonly
+      GOCACHE: /tmp/gocache
+      GOMODCACHE: /tmp/gomod
+    command: ["go", "run", "./tools/migrate.go", "-dir", "apps/api/sql"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

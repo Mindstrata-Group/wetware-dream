@@ -1,0 +1,38 @@
+# environment and secrets
+.env
+.env.*
+!.env.example
+!.env.prod.example
+deploy/.env.prod
+deploy/Caddyfile
+runner/.env
+
+# dependencies and builds
+.cache/
+node_modules/
+.next/
+out/
+dist/
+bin/
+coverage/
+coverage.out
+cover.out
+
+# test artifacts
+test-results/
+playwright-report/
+.stryker-tmp/
+reports/
+
+# editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# data exports never belong in git
+*.dump
+*.sql.gz
+backups/
+exports/

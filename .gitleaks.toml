@@ -1,0 +1,54 @@
+# Secret scanning rules (scripts/scan-secrets.sh, CI job "secrets", pre-commit hook).
+# Built-in gitleaks rules plus key formats of the AI providers this project
+# talks to: the built-in set misses several of them.
+
+title = "Mindstrata secret scan"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "openrouter-style-key"
+description = "OpenRouter-compatible gateway key (sk-or-...)"
+regex = '''sk-or-v[0-9a-zA-Z]{10,}'''
+keywords = ["sk-or-"]
+
+[[rules]]
+id = "anthropic-key"
+description = "Anthropic key (sk-ant-...), including admin keys"
+regex = '''sk-ant-[A-Za-z0-9_-]{20,}'''
+keywords = ["sk-ant-"]
+
+[[rules]]
+id = "openai-style-key"
+description = "OpenAI-format key (sk-... of 32+ characters)"
+regex = '''\bsk-[A-Za-z0-9]{32,}\b'''
+keywords = ["sk-"]
+
+[[rules]]
+id = "google-api-key"
+description = "Google API key (AIza...)"
+regex = '''AIza[0-9A-Za-z_-]{35}'''
+keywords = ["AIza"]
+
+[[rules]]
+id = "telegram-bot-token"
+description = "Telegram bot token"
+regex = '''\b[0-9]{8,10}:[A-Za-z0-9_-]{35}\b'''
+
+[[rules]]
+id = "secret-in-ip-url"
+description = "Secret path segment in a URL to a raw IP address; such URLs belong in settings, not code"
+regex = '''https://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/[0-9a-f]{24,}'''
+
+[allowlist]
+description = "Values that are fake by construction"
+paths = [
+  # Test fixtures look like secrets on purpose: masking tests need them.
+  '''apps/api/internal/httpapi/.*_test\.go''',
+  '''apps/api/internal/billing/.*_test\.go''',
+  '''apps/web/src/.*\.test\.tsx?''',
+  '''.*\.env(\.prod)?\.example$''',
+  # Generated OpenAPI types: long path hashes look like keys.
+  '''apps/web/src/lib/generated/.*''',
+]

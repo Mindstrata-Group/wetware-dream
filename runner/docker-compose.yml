@@ -1,0 +1,47 @@
+# Test runner on a contributor's computer. Installed by runner/install.sh
+# (runner/install.ps1 on Windows); there is no need to edit this file.
+#
+# Why it looks like this:
+# - the runner is ephemeral: one job, then the container starts from scratch;
+# - the host docker.sock is NOT mounted: a job from a fork never gets root on
+#   your machine;
+# - Postgres for integration tests is a separate container next to the runner
+#   with data in memory; tests create isolated databases themselves;
+# - CPU and memory limits keep tests from taking the whole computer.
+
+services:
+  runner:
+    build:
+      context: .
+      args:
+        RUNNER_VERSION: "2.337.0"
+    image: mindstrata-runner:local
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      EPHEMERAL: "true"
+      TEST_DATABASE_URL: "postgres://mindstrata:mind@postgres:5432/postgres?sslmode=disable"
+    cpus: ${RUNNER_CPUS:-2}
+    mem_limit: ${RUNNER_MEMORY:-6g}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mindstrata
+      POSTGRES_PASSWORD: mind
+      POSTGRES_DB: postgres
+    tmpfs:
+      - /var/lib/postgresql/data
+    cpus: ${RUNNER_DB_CPUS:-1}
+    mem_limit: ${RUNNER_DB_MEMORY:-1g}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mindstrata"]
+      interval: 3s
+      timeout: 3s
+      retries: 40

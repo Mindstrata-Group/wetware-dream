@@ -1,0 +1,15 @@
+/* Chat: the layout is drawn with inline styles in page.tsx (see const T, iconBtnStyle, etc.).
+   Only the classes used by the JSX page are kept here. */
+
+.ms-chat-input::placeholder { color: #7A9A8E; }
+.ms-chat-input:focus { border-color: #1D9E75; }
+
+.ms-hist-search::placeholder { color: #7A9A8E; }
+
+.ms-chat-rail::-webkit-scrollbar { display: none; }
+.ms-chat-rail { scrollbar-width: none; }
+
+.ms-chat-feed { scrollbar-width: thin; scrollbar-color: rgba(0, 0, 0, 0.07) transparent; }
+
+.ms-mode-pill-strip::-webkit-scrollbar { display: none; }
+.ms-mode-pill-strip { scrollbar-width: none; }

@@ -1,0 +1,36 @@
+# Node runtime artefacts — npm ci inside the container installs these freshly
+node_modules/
+
+# Next.js output from prior local/CI builds — avoids sending hundreds of MB
+# of stale build artefacts into the build context (was the main culprit behind
+# the 289 s "COPY . ." step when node_modules/.next were in context)
+.next/
+
+# Test output
+coverage/
+*.lcov
+
+# Editor / OS artefacts
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+Thumbs.db
+
+# CI / git metadata
+.git/
+.github/
+*.md
+
+# Local env files — never bake secrets into the image
+.env
+.env.*
+*.env
+.env.local
+.env.development
+.env.test
+
+# Vitest / Jest
+__snapshots__/
+*.snap

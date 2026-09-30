@@ -1,0 +1,71 @@
+# Release by tag: vMAJOR.MINOR.PATCH (semver, see CHANGELOG.md).
+# Publishes api and web images to ghcr.io with SBOM and provenance, and
+# creates a GitHub release with the changelog section of this version.
+name: Release
+
+on:
+  push:
+    # vX.Y.Z is a release; vX.Y.Z-rc.N is a release candidate, published as a
+    # pre-release so the whole pipeline can be exercised before a real tag.
+    tags: ["v[0-9]+.[0-9]+.[0-9]+", "v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"]
+
+permissions:
+  contents: read
+
+jobs:
+  images:
+    if: github.repository == 'Mindstrata-Group/wetware-dream'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    strategy:
+      matrix:
+        app: [api, web, anonymizer]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build and push ${{ matrix.app }}
+        env:
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE: ghcr.io/mindstrata-group/wetware-dream-${{ matrix.app }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          echo "$REGISTRY_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          image="$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')"
+          # Release candidates do not move :latest.
+          tags=(--tag "$image:$VERSION")
+          case "$VERSION" in *-rc.*) ;; *) tags+=(--tag "$image:latest") ;; esac
+          # The web image is built for "same origin": the browser calls /api on
+          # whatever domain serves it, so one image fits every installation.
+          # The anonymizer Dockerfile has test and production stages.
+          target=()
+          [ "${{ matrix.app }}" = anonymizer ] && target=(--target production)
+          docker buildx create --use --name release
+          docker buildx build "apps/${{ matrix.app }}" "${target[@]}" \
+            --build-arg NEXT_PUBLIC_API_BASE_URL= \
+            "${tags[@]}" \
+            --sbom=true --provenance=mode=max \
+            --push
+
+  github-release:
+    if: github.repository == 'Mindstrata-Group/wetware-dream'
+    needs: images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Create the release from CHANGELOG.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          base="${VERSION#v}"
+          base="${base%%-rc.*}"
+          notes="$(awk -v v="$base" '$0 ~ "^## \\[" v "\\]" {on=1; next} /^## \[/ {on=0} on' CHANGELOG.md)"
+          pre=()
+          case "$VERSION" in *-rc.*) pre=(--prerelease) ;; esac
+          gh release create "$VERSION" --title "$VERSION" "${pre[@]}" --notes "${notes:-See CHANGELOG.md}"

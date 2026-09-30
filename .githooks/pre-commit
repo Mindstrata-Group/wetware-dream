@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Optional pre-commit hook, enabled with `make hooks`.
+# Stops a commit that carries a secret or data that looks like a real person.
+set -euo pipefail
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+bash scripts/scan-secrets.sh --staged
+go run ./tools/prcheck hygiene

@@ -1,0 +1,41 @@
+name: Recipe task
+description: A small, well-defined task a newcomer (or a newcomer with an AI agent) can pick up
+labels: [recipe]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Maintainers write recipe tasks. A good one fits in one pull request and one agent session. See docs/recipes/.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal for the user
+      description: What changes for a person using the product.
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Files to touch
+      placeholder: "apps/web/src/app/...\napps/api/internal/httpapi/..."
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Observable acceptance criteria.
+    validations:
+      required: true
+  - type: textarea
+    id: test
+    attributes:
+      label: Test
+      description: Which test proves it (file and what it asserts).
+    validations:
+      required: true
+  - type: input
+    id: recipe
+    attributes:
+      label: Recipe
+      placeholder: docs/recipes/change-ui-text.md
