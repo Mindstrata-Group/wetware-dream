@@ -9,7 +9,7 @@ require (
 	github.com/prometheus/client_golang v1.23.2
 	github.com/skeema/knownhosts v1.3.1
 	github.com/stretchr/testify v1.11.1
-	go.temporal.io/api v1.62.12
+	go.temporal.io/api v1.63.6
 	go.temporal.io/sdk v1.44.1
 	golang.org/x/crypto v0.56.0
 	golang.org/x/text v0.41.0
@@ -41,6 +41,7 @@ require (
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/nexus-rpc/nexus-proto-annotations v0.1.0 // indirect
 	github.com/nexus-rpc/sdk-go v0.6.0 // indirect
 	github.com/pjbgf/sha1cd v0.6.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
