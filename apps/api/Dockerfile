@@ -8,7 +8,7 @@
 #    files changed (compiler replays cached .a packages for unchanged deps).
 #  - CGO_ENABLED=0 keeps the binary fully static so it runs in distroless.
 #  - GOARCH=amd64 is explicit: the server is x86-64; avoids any arm emulation.
-FROM golang:1.26.8 AS build
+FROM golang:1.27.0 AS build
 WORKDIR /app
 COPY go.mod go.sum* ./
 RUN --mount=type=cache,id=mindstrata-api-gomod,target=/go/pkg/mod,sharing=locked \
