@@ -9,7 +9,7 @@ images and the section of this file for that version.
 
 ## [Unreleased]
 
-## [0.1.0] - YYYY-MM-DD — "Flying Sheep"
+## [0.1.0] - 2026-09-30 — "Flying Sheep"
 
 ### Added
 
