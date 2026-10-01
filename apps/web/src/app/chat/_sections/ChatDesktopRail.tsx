@@ -42,7 +42,7 @@ export function ChatDesktopRail({ controller }: { controller: ReturnType<typeof 
               {/* history: heading */}
               <div ref={historyMenuRef} style={{ padding: "8px 14px 4px", display: "flex", alignItems: "center", gap: 6, position: "relative" }}>
                 <div style={{ fontSize: 11, color: T.ink50, textTransform: "uppercase", letterSpacing: "0.6px", fontWeight: 500, flex: 1 }}>История</div>
-                <button onClick={() => setShowHistMenu(v => !v)} style={iconBtnStyle()} title="Меню истории">
+                <button onClick={() => setShowHistMenu(v => !v)} style={iconBtnStyle()} title="Меню истории" aria-label="Меню истории" aria-expanded={showHistMenu}>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke={T.ink50} strokeWidth="1.6"><circle cx="3" cy="8" r="1" /><circle cx="8" cy="8" r="1" /><circle cx="13" cy="8" r="1" /></svg>
                 </button>
                 {showHistMenu && (
@@ -80,7 +80,7 @@ export function ChatDesktopRail({ controller }: { controller: ReturnType<typeof 
                           />
                         ) : <span style={{ fontSize: 13, fontWeight: 500, flex: 1, minWidth: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.title}</span>}
                         {hover && (
-                          <button onClick={(e) => { e.stopPropagation(); void deleteHistoryItem(item.dialogId); }} style={iconBtnStyle({ color: T.red })} title="Удалить">×</button>
+                          <button onClick={(e) => { e.stopPropagation(); void deleteHistoryItem(item.dialogId); }} style={iconBtnStyle({ color: T.red })} title="Удалить" aria-label="Удалить">×</button>
                         )}
                       </div>
                       <div style={{ fontSize: 11, color: active ? T.greenDark : T.ink50, marginTop: 2, display: "flex", justifyContent: "space-between" }}>
@@ -102,6 +102,9 @@ export function ChatDesktopRail({ controller }: { controller: ReturnType<typeof 
               <div ref={profileMenuRef} style={{ position: "relative", borderTop: `1px solid ${T.ink10}`, padding: 10 }}>
                 <button
                   onClick={() => setShowProfileMenu(v => !v)}
+                  aria-expanded={showProfileMenu}
+                  aria-label="Меню профиля"
+                  title="Профиль"
                   style={{ width: "100%", display: "flex", gap: 10, alignItems: "center", padding: "6px 8px", borderRadius: 10, border: "none", background: showProfileMenu ? T.surfaceSoft : "transparent", cursor: "pointer", fontFamily: T.fontBody, textAlign: "left" }}
                 >
                   <div style={{ width: 32, height: 32, borderRadius: "50%", background: T.greenLight, color: T.greenDark, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 13, flexShrink: 0 }}>

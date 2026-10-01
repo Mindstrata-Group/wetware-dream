@@ -169,17 +169,17 @@ return (
             </div>
           )}
           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", position: "sticky", bottom: 0 }}>
-<button onClick={() => setShowModes(true)} title="Выбор режимов" style={{ ...btnReset, height: 30, padding: "0 12px", borderRadius: 8, border: `1px solid ${T.ink20}`, background: T.surfaceSoft, color: T.ink70, fontSize: 12, gap: 6, display: mobile ? "none" : "inline-flex" }}>
+<button onClick={() => setShowModes(true)} title="Выбор режимов" aria-expanded={showModes} style={{ ...btnReset, height: 30, padding: "0 12px", borderRadius: 8, border: `1px solid ${T.ink20}`, background: T.surfaceSoft, color: T.ink70, fontSize: 12, gap: 6, display: mobile ? "none" : "inline-flex" }}>
 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M3 3v10a1 1 0 001 1h9V4a1 1 0 00-1-1H3z"/><path d="M3 11h10"/></svg>
 {currentModeLabel || "Базовый ИИ"}
 </button>
 {desktop && dialogId && (
 <>
-<button onClick={() => togglePin(dialogId)} style={iconBtnStyle({ active: activeHistoryItem?.pinned })} title="Закрепить">📌</button>
-<button onClick={() => renameHistory(dialogId)} style={iconBtnStyle()} title="Переименовать">
+<button onClick={() => togglePin(dialogId)} style={iconBtnStyle({ active: activeHistoryItem?.pinned })} title={activeHistoryItem?.pinned ? "Открепить" : "Закрепить"} aria-label={activeHistoryItem?.pinned ? "Открепить" : "Закрепить"}>📌</button>
+<button onClick={() => renameHistory(dialogId)} style={iconBtnStyle()} title="Переименовать" aria-label="Переименовать">
 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M11 2l3 3-8 8H3v-3l8-8z"/></svg>
 </button>
-<button onClick={() => setShowSearch(v => !v)} style={iconBtnStyle({ active: showSearch })} title="Поиск по чату и истории">
+<button onClick={() => setShowSearch(v => !v)} style={iconBtnStyle({ active: showSearch })} title="Поиск по чату и истории" aria-label="Поиск по чату и истории" aria-expanded={showSearch}>
 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="7" cy="7" r="5"/><path d="M12 12l3 3"/></svg>
 </button>
 </>
@@ -190,7 +190,7 @@ return (
 {dialogCompleted && <span style={{ fontSize: 12, color: T.ink50 }}>Итог сохранён. Напишите, чтобы начать новый диалог.</span>}
 </div>
 {showJumpToBottom && (
-<button onClick={() => scrollChatToBottom("smooth")} title="Вниз к последним сообщениям" style={{ ...btnReset, position: "absolute", right: mobile ? 12 : 20, bottom: mobile ? 124 : 100, width: 38, height: 38, borderRadius: "50%", background: T.surface, border: `1px solid ${T.ink20}`, color: T.greenDark, boxShadow: "0 6px 14px rgba(0,0,0,0.08)", zIndex: 5 }}>
+<button onClick={() => scrollChatToBottom("smooth")} title="Вниз к последним сообщениям" aria-label="Вниз к последним сообщениям" style={{ ...btnReset, position: "absolute", right: mobile ? 12 : 20, bottom: mobile ? 124 : 100, width: 38, height: 38, borderRadius: "50%", background: T.surface, border: `1px solid ${T.ink20}`, color: T.greenDark, boxShadow: "0 6px 14px rgba(0,0,0,0.08)", zIndex: 5 }}>
 ↓
 </button>
 )}
@@ -202,7 +202,7 @@ return (
 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: mobile ? 170 : 260 }}>{file.fileName}</span>
 <span style={{ color: T.ink50, flexShrink: 0 }}>{Math.max(1, Math.round(file.sizeBytes / 1024))} КБ</span>
 {file.annotationStatus === "annotated" && <span style={{ color: T.greenDark, flexShrink: 0 }}>сжато</span>}
-<button type="button" onClick={() => removeAttachment(file.id)} title={`Убрать ${file.fileName}`} style={{ ...btnReset, width: 18, height: 18, borderRadius: 6, color: T.ink50, flexShrink: 0 }}>×</button>
+<button type="button" onClick={() => removeAttachment(file.id)} title={`Убрать ${file.fileName}`} aria-label={`Убрать ${file.fileName}`} style={{ ...btnReset, width: 18, height: 18, borderRadius: 6, color: T.ink50, flexShrink: 0 }}>×</button>
 </span>
 ))}
 </div>
@@ -216,7 +216,7 @@ return (
 	)}
 	<div style={{ display: "flex", alignItems: "flex-end", gap: 8 }}>
 <input ref={fileInputRef} type="file" accept=".txt,.md,.doc,.docx,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword" multiple onChange={handleAttachmentInputChange} style={{ display: "none" }} />
-<button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploadingAttachment || sending} title="Прикрепить файл" style={{ ...btnReset, width: 44, height: 44, borderRadius: "50%", border: `1px solid ${T.ink20}`, background: uploadingAttachment ? T.greenLight : T.surfaceSoft, color: uploadingAttachment ? T.greenDark : T.ink70, flexShrink: 0 }}>
+<button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploadingAttachment || sending} title="Прикрепить файл" aria-label="Прикрепить файл" style={{ ...btnReset, width: 44, height: 44, borderRadius: "50%", border: `1px solid ${T.ink20}`, background: uploadingAttachment ? T.greenLight : T.surfaceSoft, color: uploadingAttachment ? T.greenDark : T.ink70, flexShrink: 0 }}>
 {uploadingAttachment ? (
 <span style={{ fontSize: 12, fontWeight: 600 }}>...</span>
 ) : (
@@ -259,7 +259,7 @@ return (
               placeholder="Напишите сообщение"
               rows={1}
             />
-<button onClick={() => canSend && void sendMessage(textareaRef.current?.value || input)} disabled={!canSend} style={{ ...btnReset, width: 44, height: 44, borderRadius: "50%", background: canSend ? T.green : T.ink20, color: "#fff", flexShrink: 0, fontSize: 18, transition: "background 0.15s" }} title="Отправить">
+<button onClick={() => canSend && void sendMessage(textareaRef.current?.value || input)} disabled={!canSend} style={{ ...btnReset, width: 44, height: 44, borderRadius: "50%", background: canSend ? T.green : T.ink20, color: "#fff", flexShrink: 0, fontSize: 18, transition: "background 0.15s" }} title="Отправить" aria-label="Отправить">
 <svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 13V3M3 8l5-5 5 5"/></svg>
 </button>
 </div>

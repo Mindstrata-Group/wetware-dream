@@ -38,7 +38,7 @@ export function ChatTopBar({ controller }: { controller: ReturnType<typeof useCh
               }
             </span>
             {desktop && (
-              <button onClick={() => setShowModes(true)} style={{ ...btnReset, height: 32, padding: "0 12px", borderRadius: 999, border: `1px solid ${T.ink20}`, background: T.surfaceSoft, color: T.ink70, fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}>
+              <button onClick={() => setShowModes(true)} style={{ ...btnReset, height: 32, padding: "0 12px", borderRadius: 999, border: `1px solid ${T.ink20}`, background: T.surfaceSoft, color: T.ink70, fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }} title="Режимы" aria-expanded={showModes}>
                 {orchestrationLabel}
               </button>
             )}
@@ -58,7 +58,7 @@ export function ChatTopBar({ controller }: { controller: ReturnType<typeof useCh
         </header>
         {mobile && (
           <div style={{ flexShrink: 0, display: "flex", justifyContent: "center", gap: 8, padding: "6px 14px 8px", background: T.surface, borderBottom: `1px solid ${T.ink10}` }}>
-            <button onClick={() => setShowModes(true)} style={{ ...btnReset, height: 30, padding: "0 12px", borderRadius: 8, border: `1px solid ${T.ink20}`, background: T.surfaceSoft, color: T.ink70, fontSize: 12, gap: 6 }}>
+            <button onClick={() => setShowModes(true)} style={{ ...btnReset, height: 30, padding: "0 12px", borderRadius: 8, border: `1px solid ${T.ink20}`, background: T.surfaceSoft, color: T.ink70, fontSize: 12, gap: 6 }} title="Выбор режимов" aria-expanded={showModes}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M3 3v10a1 1 0 001 1h9V4a1 1 0 00-1-1H3z"/><path d="M3 11h10"/></svg>
               {currentModeLabel || "Базовый ИИ"}
             </button>
@@ -92,9 +92,9 @@ export function ChatTopBar({ controller }: { controller: ReturnType<typeof useCh
             <span style={{ minWidth: 74, textAlign: "right", fontSize: 12, color: T.ink50 }}>
               {chatSearchQ ? (chatSearchMatchCount > 0 ? `${chatSearchActivePosition} / ${chatSearchMatchCount}` : "0 совпадений") : ""}
             </span>
-            <button type="button" onClick={goToPreviousChatSearchMatch} disabled={chatSearchMatchCount === 0} title="Предыдущее совпадение" style={iconBtnStyle({ color: chatSearchMatchCount === 0 ? T.ink20 : T.ink70 })}>↑</button>
-            <button type="button" onClick={goToNextChatSearchMatch} disabled={chatSearchMatchCount === 0} title="Следующее совпадение" style={iconBtnStyle({ color: chatSearchMatchCount === 0 ? T.ink20 : T.ink70 })}>↓</button>
-            <button onClick={() => { setShowSearch(false); setChatSearchQ(""); }} style={iconBtnStyle()}>×</button>
+            <button type="button" onClick={goToPreviousChatSearchMatch} disabled={chatSearchMatchCount === 0} title="Предыдущее совпадение" aria-label="Предыдущее совпадение" style={iconBtnStyle({ color: chatSearchMatchCount === 0 ? T.ink20 : T.ink70 })}>↑</button>
+            <button type="button" onClick={goToNextChatSearchMatch} disabled={chatSearchMatchCount === 0} title="Следующее совпадение" aria-label="Следующее совпадение" style={iconBtnStyle({ color: chatSearchMatchCount === 0 ? T.ink20 : T.ink70 })}>↓</button>
+            <button onClick={() => { setShowSearch(false); setChatSearchQ(""); }} style={iconBtnStyle()} title="Закрыть поиск" aria-label="Закрыть поиск">×</button>
           </div>
         )}
     </>
