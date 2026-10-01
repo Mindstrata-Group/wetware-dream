@@ -10,7 +10,7 @@ error, fix one thing, push again.
 
 | Job | Typical cause | What to do |
 |---|---|---|
-| Repository gates | gofmt; a real-looking phone/e-mail in a fixture; an unpinned action | run `make guard` locally; the message names the file and line |
+| Repository gates | gofmt; a real-looking phone/e-mail in a fixture; an unpinned action | run `make fmt` or `make guard` locally; the message names the file and line |
 | Secret scan | a key or token in a commit | **rotate the key** (it is already public), then remove it from the branch |
 | Tests changed with code | logic changed without a test | add a test; or explain in the PR why none is needed |
 | API vet + unit | compile error, failing unit test, data race | `make api-vet api-unit` |
