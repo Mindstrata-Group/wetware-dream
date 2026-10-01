@@ -14,7 +14,7 @@ TEST_PG_PORT ?= 55439
 PYTHON ?= python3
 ANON_VENV ?= .cache/anonymizer-venv
 
-.PHONY: help check guard comments secrets tests-touched fmt-check api-vet api-unit api-integration \
+.PHONY: help check guard comments secrets tests-touched fmt fmt-check api-vet api-unit api-integration \
         web-install web-check anonymizer-test dev dev-down hooks migration migrate
 
 help: ## list targets
@@ -41,8 +41,11 @@ secrets: ## gitleaks over the commits of this change (RANGE=base..head)
 tests-touched: ## logic changed => tests changed (or the no-tests-needed label)
 	$(GO) run ./tools/prcheck tests-touched -base "$(BASE)"
 
+fmt: ## format Go code (apps/api, tools)
+	gofmt -w apps/api tools
+
 fmt-check:
-	@out="$$(gofmt -l apps/api tools)"; if [ -n "$$out" ]; then echo "gofmt needed:"; echo "$$out"; exit 1; fi
+	@out="$$(gofmt -l apps/api tools)"; if [ -n "$$out" ]; then echo "gofmt needed: run 'make fmt'"; echo "$$out"; exit 1; fi
 
 api-vet: ## go vet, including integration tests
 	cd apps/api && $(GO) vet ./... && $(GO) vet -tags=integration ./...
