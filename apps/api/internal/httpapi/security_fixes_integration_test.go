@@ -1549,14 +1549,46 @@ func TestSecurity_PublicDemoModes_DoesNotExposeSystemPrompts(t *testing.T) {
 	env := testsupport.NewEnv(t)
 	f := NewFactory(t, env.Pool)
 	ts := NewTestServer(t, env.Pool)
+	ctx := context.Background()
 
 	promptMarker := "secret_system_prompt_marker_" + f.uniqueSuffix()
 	welcomeMarker := "welcome_message_marker_" + f.uniqueSuffix()
 
-	_ = f.CreateMode(TestModeOpts{
+	mode := f.CreateMode(TestModeOpts{
 		Prompt:         "You are a test psychologist. " + promptMarker,
 		WelcomeMessage: welcomeMarker,
 	})
+
+	// Make the mode a public demo mode by setting non-empty demo_chat and linking an active subscription tariff
+	_, err := env.Pool.Exec(ctx,
+		`update modes set demo_chat = '[{"role":"user","content":"demo"}]'::jsonb where id = $1`,
+		mode.ID,
+	)
+	if err != nil {
+		t.Fatalf("update mode demo_chat: %v", err)
+	}
+
+	var tariffID int64
+	err = env.Pool.QueryRow(ctx, `
+		insert into tariffs (name, monthly_price, daily_message_limit, limit_type, available_for_subscription, tariff_type)
+		values ($1, 100.00, 50, 'shared', true, 'regular')
+		returning id`,
+		"test-public-demo-tariff-"+f.uniqueSuffix(),
+	).Scan(&tariffID)
+	if err != nil {
+		t.Fatalf("create tariff for demo mode: %v", err)
+	}
+
+	_, err = env.Pool.Exec(ctx,
+		`insert into tariff_mode (tariff_id, mode_id) values ($1, $2)`,
+		tariffID, mode.ID,
+	)
+	if err != nil {
+		t.Fatalf("link tariff_mode: %v", err)
+	}
+
+	// Reset cache so PublicDemoModes queries DB
+	ts.Handler.clearPublicDemoModesCache()
 
 	resp, err := ts.Client.Get(ts.URL("/api/public/demo-modes"))
 	if err != nil {
@@ -1608,4 +1640,5 @@ func TestSecurity_PublicDemoModes_DoesNotExposeSystemPrompts(t *testing.T) {
 		}
 	}
 }
+
 
