@@ -1640,5 +1640,3 @@ func TestSecurity_PublicDemoModes_DoesNotExposeSystemPrompts(t *testing.T) {
 		}
 	}
 }
-
-
