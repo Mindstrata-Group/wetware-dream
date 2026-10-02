@@ -1541,3 +1541,71 @@ func TestSecurity_KNEW5_2b_GrantAdminRoleUpgradesUser(t *testing.T) {
 		t.Errorf("K-NEW5-2b: user не upgrade'нулся до admin, got %q", role)
 	}
 }
+
+// TestSecurity_PublicDemoModes_DoesNotExposeSystemPrompts:
+// GET /api/public/demo-modes must return 200 without exposing mode prompts or non-public fields.
+func TestSecurity_PublicDemoModes_DoesNotExposeSystemPrompts(t *testing.T) {
+	t.Parallel()
+	env := testsupport.NewEnv(t)
+	f := NewFactory(t, env.Pool)
+	ts := NewTestServer(t, env.Pool)
+
+	promptMarker := "secret_system_prompt_marker_" + f.uniqueSuffix()
+	welcomeMarker := "welcome_message_marker_" + f.uniqueSuffix()
+
+	_ = f.CreateMode(TestModeOpts{
+		Prompt:         "You are a test psychologist. " + promptMarker,
+		WelcomeMessage: welcomeMarker,
+	})
+
+	resp, err := ts.Client.Get(ts.URL("/api/public/demo-modes"))
+	if err != nil {
+		t.Fatalf("GET /api/public/demo-modes: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("GET /api/public/demo-modes status = %d, want 200", resp.StatusCode)
+	}
+
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("read response body: %v", err)
+	}
+	rawBody := string(bodyBytes)
+
+	// 1. Assert prompt marker is completely absent from the raw response body
+	if strings.Contains(rawBody, promptMarker) {
+		t.Fatalf("SECURITY BREACH: public demo modes exposed system prompt marker %q in raw body:\n%s", promptMarker, rawBody)
+	}
+
+	// 2. Assert JSON response structure and exact public keys for each mode object
+	var payload struct {
+		OK    bool             `json:"ok"`
+		Modes []map[string]any `json:"modes"`
+	}
+	if err := json.Unmarshal(bodyBytes, &payload); err != nil {
+		t.Fatalf("unmarshal response JSON: %v", err)
+	}
+	if !payload.OK {
+		t.Fatalf("expected ok=true in response, got: %s", rawBody)
+	}
+	if len(payload.Modes) == 0 {
+		t.Fatalf("expected at least one demo mode in response")
+	}
+
+	allowedKeys := map[string]bool{
+		"id":       true,
+		"name":     true,
+		"demoChat": true,
+	}
+
+	for i, modeMap := range payload.Modes {
+		for key := range modeMap {
+			if !allowedKeys[key] {
+				t.Errorf("mode[%d] has unapproved non-public key %q (allowed: id, name, demoChat)", i, key)
+			}
+		}
+	}
+}
+
