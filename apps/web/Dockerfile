@@ -17,7 +17,7 @@
 #  - NEXT_TELEMETRY_DISABLED=1 in the build stage eliminates the telemetry
 #    network call during `next build`, saving a few seconds and removing a
 #    spurious network dependency.
-FROM node:22-bookworm-slim AS deps
+FROM node:25-bookworm-slim AS deps
 WORKDIR /app
 ENV NPM_CONFIG_FETCH_RETRIES=5 \
     NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=20000 \
@@ -33,7 +33,7 @@ RUN --mount=type=cache,id=mindstrata-web-npm,target=/root/.npm,sharing=locked \
       sleep $((attempt * 10)); \
     done
 
-FROM node:22-bookworm-slim AS build
+FROM node:25-bookworm-slim AS build
 WORKDIR /app
 ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:18080
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL \
@@ -43,7 +43,7 @@ COPY . .
 RUN --mount=type=cache,id=mindstrata-web-next,target=/app/.next/cache,sharing=locked \
     UV_THREADPOOL_SIZE=$(nproc) npm run build
 
-FROM node:22-bookworm-slim AS runner
+FROM node:25-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
