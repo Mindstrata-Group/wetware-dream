@@ -27,7 +27,8 @@ func usage() {
   go run ./tools/prcheck hygiene        [-root .]
   go run ./tools/prcheck comments       [-root .]
   go run ./tools/prcheck deploy         [-dir deploy]
-  go run ./tools/prcheck fresh-clone    [-file .github/workflows/ci.yml]`)
+  go run ./tools/prcheck fresh-clone    [-file .github/workflows/ci.yml]
+  go run ./tools/prcheck links          [-root .]`)
 	os.Exit(2)
 }
 
@@ -44,6 +45,7 @@ func main() {
 		"comments":       runComments,
 		"deploy":         runDeploy,
 		"fresh-clone":    runFreshClone,
+		"links":          runLinks,
 	}
 	cmd, ok := commands[os.Args[1]]
 	if !ok {
@@ -327,4 +329,27 @@ func envOr(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+func runLinks(args []string) error {
+	fl := flag.NewFlagSet("links", flag.ExitOnError)
+	root := fl.String("root", ".", "repository root")
+	_ = fl.Parse(args)
+	var problems []string
+	files := 0
+	headingCache := make(map[string]map[string]bool)
+	err := walkText(*root, func(rel string, data []byte) {
+		if strings.HasSuffix(strings.ToLower(rel), ".md") {
+			files++
+			problems = append(problems, CheckMarkdownLinks(*root, rel, data, headingCache)...)
+		}
+	})
+	if err != nil {
+		return err
+	}
+	if err := fail("broken Markdown relative links", problems); err != nil {
+		return err
+	}
+	fmt.Printf("links: ok - %d markdown file(s)\n", files)
+	return nil
 }
