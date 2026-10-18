@@ -2,7 +2,7 @@
 
 **Status: partially implemented.** Each section below carries its own status.
 Legal background, sources and the date they were checked:
-[`docs/legal/data-protection-reference.en.md`](../legal/data-protection-reference.en.md)
+`docs/legal/data-protection-reference.en.md`
 (Russian primary version: `data-protection-reference.ru.md`). This spec does
 not restate the law; where it cites a number or a deadline, it is taken from
 that reference.

@@ -429,3 +429,122 @@ func TestComposeFilesValid(t *testing.T) {
 		}
 	}
 }
+
+func TestGitHubSlug(t *testing.T) {
+	t.Parallel()
+	cases := []struct {
+		heading string
+		want    string
+	}{
+		{"What to do", "what-to-do"},
+		{"Done when?", "done-when"},
+		{"Option 1 (Recommended)", "option-1-recommended"},
+		{"spec AC-6", "spec-ac-6"},
+		{"Mini-IPIP (20 items)", "mini-ipip-20-items"},
+		{"По-русски", "по-русски"},
+		{"`code` inside heading", "code-inside-heading"},
+		{"[link text](url) in heading", "link-text-in-heading"},
+	}
+	for _, c := range cases {
+		t.Run(c.heading, func(t *testing.T) {
+			t.Parallel()
+			if got := GitHubSlug(c.heading); got != c.want {
+				t.Fatalf("GitHubSlug(%q) = %q, want %q", c.heading, got, c.want)
+			}
+		})
+	}
+}
+
+func TestCheckMarkdownLinks(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+
+	targetMd := `# Target Document
+
+## Section One
+
+Some content.
+
+## Section Two
+
+More content.
+`
+	if err := os.WriteFile(filepath.Join(dir, "target.md"), []byte(targetMd), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	subDir := filepath.Join(dir, "sub")
+	if err := os.MkdirAll(subDir, 0o750); err != nil {
+		t.Fatal(err)
+	}
+	subReadme := `# Sub README
+
+## Guide
+`
+	if err := os.WriteFile(filepath.Join(subDir, "README.md"), []byte(subReadme), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	cases := []struct {
+		name    string
+		content string
+		wantBad int
+	}{
+		{
+			name:    "good relative file link",
+			content: "Check [target](target.md) here.",
+			wantBad: 0,
+		},
+		{
+			name:    "good link with valid anchor",
+			content: "Read [section](target.md#section-one) now.",
+			wantBad: 0,
+		},
+		{
+			name:    "good anchor in same file",
+			content: "# Self Title\n\nJump to [title](#self-title).",
+			wantBad: 0,
+		},
+		{
+			name:    "good link to directory with readme anchor",
+			content: "Go to [guide](sub#guide).",
+			wantBad: 0,
+		},
+		{
+			name:    "missing file link",
+			content: "Check [missing](does-not-exist.md).",
+			wantBad: 1,
+		},
+		{
+			name:    "missing anchor in existing file",
+			content: "Check [missing section](target.md#non-existent-section).",
+			wantBad: 1,
+		},
+		{
+			name:    "external links ignored",
+			content: "Visit [site](https://example.com/foo) or [insecure](http://test.org) or [mail](mailto:dev@example.com).",
+			wantBad: 0,
+		},
+		{
+			name:    "links inside code block ignored",
+			content: "```markdown\n[broken link](does-not-exist.md)\n```\n~~~markdown\n[broken](also-missing.md)\n~~~",
+			wantBad: 0,
+		},
+		{
+			name:    "escapes repository root",
+			content: "Check [escape](../../../etc/passwd).",
+			wantBad: 1,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+			cache := make(map[string]map[string]bool)
+			probs := CheckMarkdownLinks(dir, "test.md", []byte(c.content), cache)
+			if len(probs) != c.wantBad {
+				t.Fatalf("got %d problems, want %d: %v", len(probs), c.wantBad, probs)
+			}
+		})
+	}
+}

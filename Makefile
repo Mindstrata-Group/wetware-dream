@@ -14,7 +14,7 @@ TEST_PG_PORT ?= 55439
 PYTHON ?= python3
 ANON_VENV ?= .cache/anonymizer-venv
 
-.PHONY: help check guard comments secrets tests-touched fmt fmt-check api-vet api-unit api-integration \
+.PHONY: help check guard links comments secrets tests-touched fmt fmt-check api-vet api-unit api-integration \
         web-install web-check anonymizer-test dev dev-down hooks migration migrate
 
 help: ## list targets
@@ -31,6 +31,10 @@ guard: fmt-check ## repository gates: runner safety, pinned actions, hygiene, de
 	$(GO) run ./tools/prcheck hygiene
 	$(GO) run ./tools/prcheck deploy
 	$(GO) run ./tools/prcheck fresh-clone
+	$(GO) run ./tools/prcheck links
+
+links: ## verify relative Markdown links and anchors
+	$(GO) run ./tools/prcheck links
 
 comments: ## code comments are in English
 	$(GO) run ./tools/prcheck comments
